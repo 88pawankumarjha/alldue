@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AllDue — Reminders</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>AllDue</h1>
+        <small class="note">Manual-first, lightweight reminders</small>
+      </header>
+
+      <form method="post" action="/add">
+        <input name="title" type="text" placeholder="Title" required>
+        <select name="source">
+          <option>Personal</option>
+          <option>Office</option>
+          <option>Slack</option>
+        </select>
+        <input name="deadline" type="date" required>
+        <button type="submit">Add</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Source</th><th>Deadline</th></tr>
+        </thead>
+        <tbody>
+          {% for r in reminders %}
+          <tr class="{{ r.row_class }}">
+            <td>{{ r.title }}</td>
+            <td>{{ r.source }}</td>
+            <td>{{ r.deadline }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3">No reminders yet. Add one above.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
