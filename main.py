@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from datetime import date, datetime
+from urllib.parse import urlencode
 import sqlite3
 import os
 
@@ -135,14 +136,13 @@ def startup_event():
     init_db()
 
 
-@app.get("/")
-def index(request: Request):
+@app.get("/reminders")
+def reminders_page(request: Request):
     reminders = get_all_reminders()
     return templates.TemplateResponse("index.html", {"request": request, "reminders": reminders})
 
 
-@app.get("/videos")
-def videos(request: Request, v: str = "", q: str = ""):
+def render_video_page(request: Request, v: str = "", q: str = ""):
     query = q.strip()
     filtered_videos = search_archive_videos(query)
     visible_videos = filtered_videos or ARCHIVE_VIDEOS
@@ -159,6 +159,22 @@ def videos(request: Request, v: str = "", q: str = ""):
             "has_results": bool(filtered_videos),
         },
     )
+
+
+@app.get("/")
+def videos_home(request: Request, v: str = "", q: str = ""):
+    return render_video_page(request, v, q)
+
+
+@app.get("/videos")
+def videos_redirect(v: str = "", q: str = ""):
+    params = {}
+    if v:
+        params["v"] = v
+    if q:
+        params["q"] = q
+    suffix = f"?{urlencode(params)}" if params else ""
+    return RedirectResponse(url=f"/{suffix}", status_code=302)
 
 
 @app.post("/add")
