@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nikhil Funtime — Archive videos</title>
-    <link rel="stylesheet" href="/static/style.css?v=20260616-1">
+    <link rel="stylesheet" href="/static/style.css?v=20260616-2">
   </head>
   <body class="video-page">
     <header class="video-topbar">
@@ -24,10 +24,14 @@
     <main class="watch-layout{% if not recommendations %} solo-watch{% endif %}">
       <section class="watch-column" aria-label="Selected video">
         <div class="video-frame">
-          <video controls preload="metadata" poster="{{ selected.thumb_url }}">
-            <source src="{{ selected.video_url }}" type="video/mp4">
-            Your browser does not support the video element.
-          </video>
+          <iframe
+            src="{{ selected.embed_url }}"
+            title="{{ selected.title }}"
+            allow="fullscreen; autoplay"
+            webkitallowfullscreen="true"
+            mozallowfullscreen="true"
+            allowfullscreen>
+          </iframe>
         </div>
         <div class="watch-meta">
           <h1>{{ selected.title }}</h1>

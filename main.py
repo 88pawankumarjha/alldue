@@ -24,6 +24,7 @@ ARCHIVE_VIDEOS = [
         "views": "New Archive upload",
         "summary": "A suspenseful horror short video from Nikhil Funtime.",
         "archive_url": "https://archive.org/details/suno-darwaza-mat-kholna",
+        "embed_url": "https://archive.org/embed/suno-darwaza-mat-kholna",
         "video_url": (
             "https://archive.org/download/suno-darwaza-mat-kholna/"
             "Project_05-11_Full%20HD%201080p_MEDIUM_FR30_%282%29.mp4"
