@@ -28,7 +28,7 @@ ARCHIVE_VIDEOS = [
             "https://archive.org/download/suno-darwaza-mat-kholna/"
             "Project_05-11_Full%20HD%201080p_MEDIUM_FR30_%282%29.mp4"
         ),
-        "thumb_url": "https://archive.org/services/img/suno-darwaza-mat-kholna",
+        "thumb_url": "https://archive.org/download/suno-darwaza-mat-kholna/1778528528940.png",
     },
 ]
 
