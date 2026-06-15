@@ -14,6 +14,37 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
+ARCHIVE_VIDEOS = [
+    {
+        "id": "ClaytonCameron_2013Y",
+        "title": "A-rhythm-etic: the math behind the beats",
+        "creator": "Clayton Cameron",
+        "duration": "5:57",
+        "views": "31K archive downloads",
+        "summary": (
+            "Drummer Clayton Cameron breaks down R&B, Latin, pop, hip hop, "
+            "and jazz through the math of rhythm."
+        ),
+        "archive_url": "https://archive.org/details/ClaytonCameron_2013Y",
+        "video_url": "https://archive.org/download/ClaytonCameron_2013Y/ClaytonCameron_2013Y.mp4",
+        "thumb_url": "https://archive.org/services/img/ClaytonCameron_2013Y",
+    },
+    {
+        "id": "Movies_in_2018",
+        "title": "Movies in 2018",
+        "creator": "Classic Cinemas",
+        "duration": "5:24",
+        "views": "18K archive downloads",
+        "summary": (
+            "A quick preview of notable 2018 movie releases, from action "
+            "sequels to new surprises."
+        ),
+        "archive_url": "https://archive.org/details/Movies_in_2018",
+        "video_url": "https://archive.org/download/Movies_in_2018/Movies_in_2018.mp4",
+        "thumb_url": "https://archive.org/services/img/Movies_in_2018",
+    },
+]
+
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -88,6 +119,21 @@ def startup_event():
 def index(request: Request):
     reminders = get_all_reminders()
     return templates.TemplateResponse("index.html", {"request": request, "reminders": reminders})
+
+
+@app.get("/videos")
+def videos(request: Request, v: str = ""):
+    selected = next((video for video in ARCHIVE_VIDEOS if video["id"] == v), ARCHIVE_VIDEOS[0])
+    recommendations = [video for video in ARCHIVE_VIDEOS if video["id"] != selected["id"]]
+    return templates.TemplateResponse(
+        "videos.html",
+        {
+            "request": request,
+            "selected": selected,
+            "recommendations": recommendations,
+            "videos": ARCHIVE_VIDEOS,
+        },
+    )
 
 
 @app.post("/add")

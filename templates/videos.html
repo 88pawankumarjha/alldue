@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AllDue TV — Archive videos</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body class="video-page">
+    <header class="video-topbar">
+      <a class="video-brand" href="/videos" aria-label="AllDue TV home">
+        <span class="play-mark">▶</span>
+        <span>AllDue TV</span>
+      </a>
+      <form class="video-search" action="/videos" method="get">
+        <input type="search" name="q" placeholder="Search Archive videos" aria-label="Search Archive videos">
+        <button type="submit">Search</button>
+      </form>
+      <nav class="top-links" aria-label="Primary">
+        <a href="/">Reminders</a>
+      </nav>
+    </header>
+
+    <main class="watch-layout">
+      <section class="watch-column" aria-label="Selected video">
+        <div class="video-frame">
+          <video controls preload="metadata" poster="{{ selected.thumb_url }}">
+            <source src="{{ selected.video_url }}" type="video/mp4">
+            Your browser does not support the video element.
+          </video>
+        </div>
+        <div class="watch-meta">
+          <h1>{{ selected.title }}</h1>
+          <div class="channel-row">
+            <div class="channel-avatar">A</div>
+            <div>
+              <strong>{{ selected.creator }}</strong>
+              <p>{{ selected.views }} · {{ selected.duration }} · streamed from Archive.org</p>
+            </div>
+            <a class="archive-link" href="{{ selected.archive_url }}" target="_blank" rel="noreferrer">Open Archive</a>
+          </div>
+          <p class="video-summary">{{ selected.summary }}</p>
+        </div>
+      </section>
+
+      <aside class="recommendations" aria-label="Recommended videos">
+        <h2>Up next</h2>
+        {% for video in recommendations %}
+        <a class="video-card" href="/videos?v={{ video.id }}">
+          <span class="thumb-wrap">
+            <img src="{{ video.thumb_url }}" alt="">
+            <span class="duration">{{ video.duration }}</span>
+          </span>
+          <span class="card-copy">
+            <strong>{{ video.title }}</strong>
+            <span>{{ video.creator }}</span>
+            <span>{{ video.views }}</span>
+          </span>
+        </a>
+        {% endfor %}
+      </aside>
+    </main>
+
+    <section class="video-shelf" aria-label="Archive video list">
+      <h2>Archive video POC</h2>
+      <div class="shelf-grid">
+        {% for video in videos %}
+        <a class="shelf-card" href="/videos?v={{ video.id }}">
+          <span class="thumb-wrap">
+            <img src="{{ video.thumb_url }}" alt="">
+            <span class="duration">{{ video.duration }}</span>
+          </span>
+          <strong>{{ video.title }}</strong>
+          <span>{{ video.creator }} · {{ video.views }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+  </body>
+</html>
