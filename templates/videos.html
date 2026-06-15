@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nikhil Funtime — Archive videos</title>
-    <link rel="stylesheet" href="/static/style.css?v=20260615-2">
+    <link rel="stylesheet" href="/static/style.css?v=20260616-1">
   </head>
   <body class="video-page">
     <header class="video-topbar">
@@ -21,7 +21,7 @@
       </nav>
     </header>
 
-    <main class="watch-layout">
+    <main class="watch-layout{% if not recommendations %} solo-watch{% endif %}">
       <section class="watch-column" aria-label="Selected video">
         <div class="video-frame">
           <video controls preload="metadata" poster="{{ selected.thumb_url }}">
@@ -32,7 +32,7 @@
         <div class="watch-meta">
           <h1>{{ selected.title }}</h1>
           <div class="channel-row">
-            <div class="channel-avatar">A</div>
+            <div class="channel-avatar">N</div>
             <div>
               <strong>{{ selected.creator }}</strong>
               <p>{{ selected.views }} · {{ selected.duration }} · streamed from Archive.org</p>
@@ -43,6 +43,7 @@
         </div>
       </section>
 
+      {% if recommendations %}
       <aside class="recommendations" aria-label="Recommended videos">
         <h2>Up next</h2>
         {% for video in recommendations %}
@@ -59,12 +60,13 @@
         </a>
         {% endfor %}
       </aside>
+      {% endif %}
     </main>
 
     <section class="video-shelf" aria-label="Archive video list">
       <h2>{% if query %}Search results for "{{ query }}"{% else %}Featured videos{% endif %}</h2>
       {% if not has_results %}
-      <p class="empty-results">No matching videos yet. Try “movies”, “rhythm”, “jazz”, or “Classic Cinemas”.</p>
+      <p class="empty-results">No matching videos yet. Try “suno”, “horror”, “hindi”, or “nikhil”.</p>
       {% endif %}
       <div class="shelf-grid">
         {% for video in videos %}

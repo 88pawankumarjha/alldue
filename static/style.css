@@ -105,6 +105,11 @@ small.note { color:#666; }
   padding: 0 24px;
 }
 
+.watch-layout.solo-watch {
+  grid-template-columns: minmax(0, 960px);
+  justify-content: center;
+}
+
 .watch-column,
 .recommendations,
 .video-shelf,
