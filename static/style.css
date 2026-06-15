@@ -137,6 +137,38 @@ small.note { color:#666; }
   background: #000;
 }
 
+.quality-control {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 1;
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(0,0,0,0.62);
+}
+
+.quality-button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.quality-button.active {
+  color: #0f0f0f;
+  background: #fff;
+}
+
+.quality-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -3px;
+}
+
 .fullscreen-button {
   position: absolute;
   top: 10px;
@@ -374,6 +406,25 @@ small.note { color:#666; }
 
   .video-frame {
     border-radius: 10px;
+  }
+
+  .quality-control {
+    left: 8px;
+    top: 8px;
+  }
+
+  .quality-button {
+    min-height: 30px;
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  .fullscreen-button {
+    top: 8px;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
   }
 
   .watch-meta h1 {

@@ -2,6 +2,7 @@
   const frame = document.querySelector("[data-video-frame]");
   const video = document.querySelector("[data-watch-video]");
   const fullscreenButton = document.querySelector("[data-fullscreen-landscape]");
+  const qualityButtons = [...document.querySelectorAll("[data-quality-url]")];
 
   if (!frame || !video || !fullscreenButton) {
     return;
@@ -58,6 +59,45 @@
   };
 
   fullscreenButton.addEventListener("click", enterFullscreen);
+
+  qualityButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextSource = button.dataset.qualityUrl;
+      if (!nextSource || button.classList.contains("active")) {
+        return;
+      }
+
+      const resumeAt = video.currentTime || 0;
+      const shouldPlay = !video.paused && !video.ended;
+      const source = video.querySelector("source");
+
+      qualityButtons.forEach((qualityButton) => {
+        const isActive = qualityButton === button;
+        qualityButton.classList.toggle("active", isActive);
+        qualityButton.setAttribute("aria-pressed", String(isActive));
+      });
+
+      video.addEventListener(
+        "loadedmetadata",
+        () => {
+          if (Number.isFinite(video.duration)) {
+            video.currentTime = Math.min(resumeAt, Math.max(video.duration - 0.5, 0));
+          }
+
+          if (shouldPlay) {
+            video.play().catch(() => {});
+          }
+        },
+        { once: true }
+      );
+
+      if (source) {
+        source.src = nextSource;
+      }
+      video.src = nextSource;
+      video.load();
+    });
+  });
 
   document.addEventListener("fullscreenchange", () => {
     if (document.fullscreenElement) {

@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nikhil Funtime — Archive videos</title>
-    <link rel="stylesheet" href="/static/style.css?v=20260616-3">
-    <script src="/static/player.js?v=20260616-1" defer></script>
+    <link rel="stylesheet" href="/static/style.css?v=20260616-4">
+    <script src="/static/player.js?v=20260616-2" defer></script>
   </head>
   <body class="video-page">
     <header class="video-topbar">
@@ -29,6 +29,17 @@
             <source src="{{ selected.video_url }}" type="video/mp4">
             Your browser does not support the video element.
           </video>
+          <div class="quality-control" aria-label="Video quality">
+            {% for option in selected.quality_options %}
+            <button
+              class="quality-button{% if option.url == selected.video_url %} active{% endif %}"
+              type="button"
+              data-quality-url="{{ option.url }}"
+              aria-pressed="{{ 'true' if option.url == selected.video_url else 'false' }}">
+              {{ option.label }}
+            </button>
+            {% endfor %}
+          </div>
           <button class="fullscreen-button" type="button" data-fullscreen-landscape aria-label="Open fullscreen landscape" title="Open fullscreen landscape">⛶</button>
         </div>
         <div class="watch-meta">
