@@ -120,6 +120,7 @@ small.note { color:#666; }
 }
 
 .video-frame {
+  position: relative;
   overflow: hidden;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -127,7 +128,6 @@ small.note { color:#666; }
   background: #000;
 }
 
-.video-frame iframe,
 .video-frame video {
   display: block;
   width: 100%;
@@ -135,6 +135,43 @@ small.note { color:#666; }
   border: 0;
   object-fit: contain;
   background: #000;
+}
+
+.fullscreen-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(0,0,0,0.66);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fullscreen-button:hover,
+.fullscreen-button:focus-visible {
+  background: rgba(0,0,0,0.86);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.video-frame:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+
+.video-frame:fullscreen .fullscreen-button {
+  display: none;
 }
 
 .watch-meta h1 {
