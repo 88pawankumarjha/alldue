@@ -13,7 +13,7 @@
         <span>AllDue TV</span>
       </a>
       <form class="video-search" action="/videos" method="get">
-        <input type="search" name="q" placeholder="Search Archive videos" aria-label="Search Archive videos">
+        <input type="search" name="q" value="{{ query }}" placeholder="Search Archive videos" aria-label="Search Archive videos">
         <button type="submit">Search</button>
       </form>
       <nav class="top-links" aria-label="Primary">
@@ -46,7 +46,7 @@
       <aside class="recommendations" aria-label="Recommended videos">
         <h2>Up next</h2>
         {% for video in recommendations %}
-        <a class="video-card" href="/videos?v={{ video.id }}">
+        <a class="video-card" href="/videos?v={{ video.id }}{% if query %}&q={{ query | urlencode }}{% endif %}">
           <span class="thumb-wrap">
             <img src="{{ video.thumb_url }}" alt="">
             <span class="duration">{{ video.duration }}</span>
@@ -62,10 +62,13 @@
     </main>
 
     <section class="video-shelf" aria-label="Archive video list">
-      <h2>Archive video POC</h2>
+      <h2>{% if query %}Search results for "{{ query }}"{% else %}Archive video POC{% endif %}</h2>
+      {% if not has_results %}
+      <p class="empty-results">No matching videos yet. Try “movies”, “rhythm”, “jazz”, or “Classic Cinemas”.</p>
+      {% endif %}
       <div class="shelf-grid">
         {% for video in videos %}
-        <a class="shelf-card" href="/videos?v={{ video.id }}">
+        <a class="shelf-card" href="/videos?v={{ video.id }}{% if query %}&q={{ query | urlencode }}{% endif %}">
           <span class="thumb-wrap">
             <img src="{{ video.thumb_url }}" alt="">
             <span class="duration">{{ video.duration }}</span>

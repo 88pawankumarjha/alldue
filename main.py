@@ -110,6 +110,26 @@ def get_all_reminders():
     return out
 
 
+def search_archive_videos(query: str):
+    terms = query.strip().lower().split()
+    if not terms:
+        return ARCHIVE_VIDEOS
+
+    results = []
+    for video in ARCHIVE_VIDEOS:
+        haystack = " ".join(
+            [
+                video["title"],
+                video["creator"],
+                video["summary"],
+                video["id"],
+            ]
+        ).lower()
+        if all(term in haystack for term in terms):
+            results.append(video)
+    return results
+
+
 @app.on_event("startup")
 def startup_event():
     init_db()
@@ -122,16 +142,21 @@ def index(request: Request):
 
 
 @app.get("/videos")
-def videos(request: Request, v: str = ""):
-    selected = next((video for video in ARCHIVE_VIDEOS if video["id"] == v), ARCHIVE_VIDEOS[0])
-    recommendations = [video for video in ARCHIVE_VIDEOS if video["id"] != selected["id"]]
+def videos(request: Request, v: str = "", q: str = ""):
+    query = q.strip()
+    filtered_videos = search_archive_videos(query)
+    visible_videos = filtered_videos or ARCHIVE_VIDEOS
+    selected = next((video for video in visible_videos if video["id"] == v), visible_videos[0])
+    recommendations = [video for video in visible_videos if video["id"] != selected["id"]]
     return templates.TemplateResponse(
         "videos.html",
         {
             "request": request,
             "selected": selected,
             "recommendations": recommendations,
-            "videos": ARCHIVE_VIDEOS,
+            "videos": filtered_videos,
+            "query": query,
+            "has_results": bool(filtered_videos),
         },
     )
 
