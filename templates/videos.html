@@ -10,16 +10,17 @@
     {% if firebase_web_config.authEnabled and firebase_web_config.apiKey and firebase_web_config.projectId and firebase_web_config.appId and firebase_web_config.authDomain %}
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-      import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+      import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
       const firebaseConfig = {{ firebase_web_config | tojson }};
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
-      const signInButton = document.querySelector("[data-google-signin]");
       const signOutButton = document.querySelector("[data-google-signout]");
       const profileButton = document.querySelector("[data-profile-button]");
       const hiddenTokenInput = document.querySelector("[data-id-token]");
       const authForm = document.querySelector("[data-auth-form]");
+      const googleClientId = firebaseConfig.googleClientId;
+      const dismissedKey = "nf_google_one_tap_dismissed";
 
       const submitToken = async (idToken) => {
         if (!authForm || !hiddenTokenInput) return;
@@ -34,51 +35,65 @@
         });
       }
 
-      const signInWithPopupFlow = async () => {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: "select_account" });
-        try {
-          const result = await signInWithPopup(auth, provider);
-          const idToken = await result.user.getIdToken();
-          await submitToken(idToken);
-        } catch (error) {
-          console.error("[auth] google sign-in failed", {
-            code: error && error.code,
-            message: error && error.message,
-            email: error && error.email
-          });
-          throw error;
+      const startOneTap = () => {
+        if (!googleClientId || localStorage.getItem(dismissedKey) === "1") {
+          return;
         }
-      };
 
-      if (signInButton) {
-        signInButton.addEventListener("click", async () => {
-          await signInWithPopupFlow();
-        });
-      }
+        const script = document.createElement("script");
+        script.src = "https://accounts.google.com/gsi/client";
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+          if (!window.google || !window.google.accounts || !window.google.accounts.id) return;
+
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: async (response) => {
+              if (response && response.credential) {
+                await submitToken(response.credential);
+              }
+            },
+            auto_select: true,
+            cancel_on_tap_outside: false
+          });
+
+          window.google.accounts.id.prompt((notification) => {
+            if (
+              notification.isNotDisplayed() ||
+              notification.isSkippedMoment() ||
+              notification.isDismissedMoment()
+            ) {
+              localStorage.setItem(dismissedKey, "1");
+            }
+          });
+        };
+        document.head.appendChild(script);
+      };
 
       if (profileButton) {
         profileButton.addEventListener("click", async () => {
-          await signInWithPopupFlow();
+          localStorage.removeItem(dismissedKey);
+          startOneTap();
         });
       }
 
       onAuthStateChanged(auth, (user) => {
         const profileText = document.querySelector("[data-profile-text]");
         const profileAvatar = document.querySelector("[data-profile-avatar]");
-        const signInButton = document.querySelector("[data-google-signin]");
-        if (!profileText || !profileAvatar || !signInButton) return;
+        if (!profileText || !profileAvatar || !profileButton) return;
         if (user) {
           profileText.textContent = user.displayName || user.email || "Signed in";
           profileAvatar.textContent = (user.displayName || user.email || "U").slice(0, 1).toUpperCase();
-          signInButton.setAttribute("aria-label", "Signed in as " + (user.email || user.displayName || "user"));
+          profileButton.setAttribute("aria-label", "Signed in as " + (user.email || user.displayName || "user"));
         } else {
           profileText.textContent = "Sign in";
           profileAvatar.textContent = "?";
-          signInButton.setAttribute("aria-label", "Sign in with Google");
+          profileButton.setAttribute("aria-label", "Sign in with Google");
         }
       });
 
+      startOneTap();
     </script>
     {% endif %}
   </head>
@@ -223,7 +238,7 @@
         <span class="bottom-nav-icon">⌂</span>
         <span>Home</span>
       </a>
-      <button type="button" class="bottom-nav-item bottom-nav-profile" aria-label="Profile"{% if profile_signin_enabled %} data-profile-button data-google-signin{% endif %}>
+      <button type="button" class="bottom-nav-item bottom-nav-profile" aria-label="Profile"{% if profile_signin_enabled %} data-profile-button{% endif %}>
         <span class="profile-avatar bottom-nav-avatar"></span>
         <span>Profile</span>
       </button>
