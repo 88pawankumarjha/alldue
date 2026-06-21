@@ -120,7 +120,7 @@
             class="icon-button"
             data-search-toggle
             aria-label="Search"
-            onclick="(() => { const drawer = document.querySelector('[data-search-drawer]'); if (!drawer) return; console.log('[dev-search] click'); const hidden = drawer.hasAttribute('hidden'); console.log('[dev-search] before', { hidden }); if (hidden) { drawer.removeAttribute('hidden'); const input = drawer.querySelector('input[type=&quot;search&quot;]'); if (input) input.focus(); console.log('[dev-search] opened'); } else { drawer.setAttribute('hidden', ''); console.log('[dev-search] closed'); } })()">
+            onclick="(() => { const drawer = document.querySelector('[data-search-drawer]'); if (!drawer) return; const hidden = drawer.hasAttribute('hidden'); if (hidden) { drawer.removeAttribute('hidden'); const input = drawer.querySelector('input[type=&quot;search&quot;]'); if (input) input.focus(); } else { drawer.setAttribute('hidden', ''); } })()">
             <span>⌕</span>
           </button>
         </div>

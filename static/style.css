@@ -125,12 +125,13 @@ small.note { color:#666; }
 .icon-button {
   display: inline-grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border: 1px solid #2a3140;
   border-radius: 50%;
   background: #10131a;
   color: #f3f4f6;
+  font-size: 18px;
 }
 
 .icon-button[aria-disabled="true"] {
@@ -180,25 +181,29 @@ small.note { color:#666; }
   border: 0;
   background: transparent;
   color: #f3f4f6;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-decoration: none;
   cursor: default;
 }
 
 .bottom-nav-profile {
-  min-width: 72px;
+  min-width: 78px;
 }
 
 .bottom-nav-icon,
 .bottom-nav-avatar {
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid #2a3140;
   background: #10131a;
+}
+
+.bottom-nav-icon {
+  font-size: 18px;
 }
 
 .dev-actions {
@@ -529,6 +534,12 @@ small.note { color:#666; }
     font-size: 18px;
   }
 
+  .icon-button {
+    width: 44px;
+    height: 44px;
+    font-size: 19px;
+  }
+
   .video-brand span:last-child {
     display: none;
   }
@@ -595,6 +606,21 @@ small.note { color:#666; }
     width: 34px;
     height: 34px;
     font-size: 18px;
+  }
+
+  .bottom-nav {
+    padding: 10px 10px 12px;
+  }
+
+  .bottom-nav-item {
+    gap: 3px;
+    font-size: 10px;
+  }
+
+  .bottom-nav-icon,
+  .bottom-nav-avatar {
+    width: 38px;
+    height: 38px;
   }
 
   .watch-meta h1 {
