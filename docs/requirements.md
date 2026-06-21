@@ -28,6 +28,7 @@
 - Like and Subscribe should update counts without a full page reload.
 - Action buttons should be flatter, tighter, and more icon-led like YouTube mobile.
 - Footer should only show Home for now; remove the profile footer control.
+- Put search in the footer instead of the top-right header.
 
 ## Tracking Rules
 - Every requested change should also be appended to `docs/audit.md`.

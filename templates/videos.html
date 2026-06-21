@@ -136,16 +136,6 @@
           <span class="play-mark">▶</span>
           <span>Nikhil Funtime</span>
         </a>
-        <div class="header-actions">
-          <button
-            type="button"
-            class="icon-button"
-            data-search-toggle
-            aria-label="Search"
-            onclick="(() => { const drawer = document.querySelector('[data-search-drawer]'); if (!drawer) return; const hidden = drawer.hasAttribute('hidden'); if (hidden) { drawer.removeAttribute('hidden'); const input = drawer.querySelector('input[type=&quot;search&quot;]'); if (input) input.focus(); } else { drawer.setAttribute('hidden', ''); } })()">
-            <span>⌕</span>
-          </button>
-        </div>
       </div>
     </header>
 
@@ -302,6 +292,14 @@
         <span class="bottom-nav-icon">⌂</span>
         <span>Home</span>
       </a>
+      <button
+        type="button"
+        class="bottom-nav-item bottom-nav-search"
+        aria-label="Search"
+        onclick="(() => { const drawer = document.querySelector('[data-search-drawer]'); if (!drawer) return; const hidden = drawer.hasAttribute('hidden'); if (hidden) { drawer.removeAttribute('hidden'); const input = drawer.querySelector('input[type=&quot;search&quot;]'); if (input) input.focus(); } else { drawer.setAttribute('hidden', ''); } })()">
+        <span class="bottom-nav-icon">⌕</span>
+        <span>Search</span>
+      </button>
     </footer>
   </body>
 </html>

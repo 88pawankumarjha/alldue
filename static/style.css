@@ -197,6 +197,10 @@ small.note { color:#666; }
   background: #10131a;
 }
 
+.bottom-nav-search {
+  min-width: 72px;
+}
+
 .bottom-nav-icon {
   font-size: 18px;
 }
