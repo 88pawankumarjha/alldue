@@ -108,15 +108,20 @@
       (() => {
         const searchToggle = document.querySelector("[data-search-toggle]");
         const searchDrawer = document.querySelector("[data-search-drawer]");
+        console.log("[dev-search] init", { hasToggle: !!searchToggle, hasDrawer: !!searchDrawer });
         if (!searchToggle || !searchDrawer) return;
         searchToggle.addEventListener("click", () => {
+          console.log("[dev-search] click");
           const isHidden = searchDrawer.hasAttribute("hidden");
+          console.log("[dev-search] before", { isHidden });
           if (isHidden) {
             searchDrawer.removeAttribute("hidden");
             const input = searchDrawer.querySelector('input[type="search"]');
             if (input) input.focus();
+            console.log("[dev-search] opened");
           } else {
             searchDrawer.setAttribute("hidden", "");
+            console.log("[dev-search] closed");
           }
         });
       })();
