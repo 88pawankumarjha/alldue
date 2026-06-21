@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nikhil Funtime — Archive videos</title>
-    <link rel="stylesheet" href="{{ static_path }}/style.css?v=20260622-1">
+    <link rel="stylesheet" href="{{ static_path }}/style.css?v=20260622-2">
     <link rel="icon" href="{{ static_path }}/favicon.svg" type="image/svg+xml">
     <script src="{{ static_path }}/player.js?v=20260616-2" defer></script>
     {% if firebase_web_config.authEnabled and firebase_web_config.apiKey and firebase_web_config.projectId and firebase_web_config.appId and firebase_web_config.authDomain %}
@@ -21,6 +21,12 @@
       const authForm = document.querySelector("[data-auth-form]");
       const googleClientId = firebaseConfig.googleClientId;
       const dismissedKey = "nf_google_one_tap_dismissed";
+      const bumpCount = (selector, delta) => {
+        const el = document.querySelector(selector);
+        if (!el) return;
+        const current = Number.parseInt(el.textContent || "0", 10) || 0;
+        el.textContent = String(Math.max(0, current + delta));
+      };
 
       const submitToken = async (idToken) => {
         if (!authForm || !hiddenTokenInput) return;
@@ -77,6 +83,29 @@
           startOneTap();
         });
       }
+
+      document.querySelectorAll("[data-ajax-action]").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const actionType = form.getAttribute("data-ajax-action");
+          const countSelector = form.getAttribute("data-count-selector");
+          try {
+            const response = await fetch(form.action, {
+              method: form.method || "POST",
+              body: new FormData(form),
+              headers: { "X-Requested-With": "fetch" }
+            });
+            if (!response.ok) {
+              throw new Error("Request failed");
+            }
+            if (actionType === "like" || actionType === "subscribe") {
+              bumpCount(countSelector, 1);
+            }
+          } catch (error) {
+            console.error("[dev-action] request failed", error);
+          }
+        });
+      });
 
       onAuthStateChanged(auth, (user) => {
         const profileText = document.querySelector("[data-profile-text]");
@@ -167,11 +196,11 @@
           <p class="video-summary">{{ selected.summary }}</p>
           {% if public_actions_enabled %}
           <div class="dev-actions" aria-label="Dev actions">
-            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/like">
-              <button type="submit" aria-label="Like this video"><span class="action-icon">♥</span><span>Like</span><span class="action-count">{{ selected.likeCount }}</span></button>
+            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/like" data-ajax-action="like" data-count-selector="[data-like-count]">
+              <button type="submit" aria-label="Like this video"><span class="action-icon">♥</span><span>Like</span><span class="action-count" data-like-count>{{ selected.likeCount }}</span></button>
             </form>
-            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/subscribe">
-              <button type="submit" aria-label="Subscribe to this video"><span class="action-icon">◉</span><span>Subscribe</span><span class="action-count">{{ selected.subscriberCount }}</span></button>
+            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/subscribe" data-ajax-action="subscribe" data-count-selector="[data-subscriber-count]">
+              <button type="submit" aria-label="Subscribe to this video"><span class="action-icon">◉</span><span>Subscribe</span><span class="action-count" data-subscriber-count>{{ selected.subscriberCount }}</span></button>
             </form>
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/comments" class="dev-comment-form">
               <input name="comment" type="text" placeholder="Add a comment" required>

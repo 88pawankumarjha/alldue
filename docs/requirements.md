@@ -25,6 +25,7 @@
 - `/dev/` should show visible action buttons for Like, Subscribe, and Comment with counts.
 - Prod should not show dev action controls or comment blocks.
 - Action and comment UI should visually resemble a compact YouTube mobile layout.
+- Like and Subscribe should update counts without a full page reload.
 
 ## Tracking Rules
 - Every requested change should also be appended to `docs/audit.md`.

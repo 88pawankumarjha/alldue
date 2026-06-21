@@ -15,3 +15,4 @@
 - Added `/dev/` comment approval actions for admin review.
 - Made Like, Subscribe, and Comment buttons visible in the `/dev/` UI with counts.
 - Hid dev action/comment blocks from prod and restyled them closer to a compact mobile video app layout.
+- Switched Like/Subscribe to AJAX so counts update in place without reloading the full page.
