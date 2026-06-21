@@ -14,3 +14,4 @@
 - Added anonymous fingerprint-based like dedupe and comment moderation queue.
 - Added `/dev/` comment approval actions for admin review.
 - Made Like, Subscribe, and Comment buttons visible in the `/dev/` UI with counts.
+- Hid dev action/comment blocks from prod and restyled them closer to a compact mobile video app layout.

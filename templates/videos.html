@@ -168,14 +168,14 @@
           {% if public_actions_enabled %}
           <div class="dev-actions" aria-label="Dev actions">
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/like">
-              <button type="submit">Like <span class="action-count">{{ selected.likeCount }}</span></button>
+              <button type="submit" aria-label="Like this video"><span class="action-icon">♥</span><span>Like</span><span class="action-count">{{ selected.likeCount }}</span></button>
             </form>
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/subscribe">
-              <button type="submit">Subscribe <span class="action-count">{{ selected.subscriberCount }}</span></button>
+              <button type="submit" aria-label="Subscribe to this video"><span class="action-icon">◉</span><span>Subscribe</span><span class="action-count">{{ selected.subscriberCount }}</span></button>
             </form>
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/comments" class="dev-comment-form">
-              <input name="comment" type="text" placeholder="Add a dev comment" required>
-              <button type="submit">Post</button>
+              <input name="comment" type="text" placeholder="Add a comment" required>
+              <button type="submit" aria-label="Post comment"><span class="action-icon">⤴</span><span>Post</span></button>
             </form>
             <div class="dev-actions-meta">
               <span>Comments {{ selected.approvedCommentCount }}</span>
@@ -188,13 +188,16 @@
             {% endif %}
           </div>
           {% endif %}
-          {% if comments %}
+          {% if is_dev and comments %}
           <div class="comment-list" aria-label="Approved comments">
             <strong>Comments</strong>
             {% for item in comments %}
             <div class="comment-item">
-              <p>{{ item.comment }}</p>
-              <span>{% if item.userName %}{{ item.userName }}{% else %}Anonymous{% endif %}</span>
+              <div class="comment-avatar">{% if item.userName %}{{ item.userName[:1] | upper }}{% else %}A{% endif %}</div>
+              <div class="comment-body">
+                <span class="comment-author">{% if item.userName %}{{ item.userName }}{% else %}Anonymous{% endif %}</span>
+                <p>{{ item.comment }}</p>
+              </div>
             </div>
             {% endfor %}
           </div>
@@ -209,7 +212,11 @@
             <strong>Pending comments</strong>
             {% for item in pending_comments %}
             <div class="comment-item">
-              <p>{{ item.comment }}</p>
+              <div class="comment-avatar">{% if item.userName %}{{ item.userName[:1] | upper }}{% else %}P{% endif %}</div>
+              <div class="comment-body">
+                <span class="comment-author">{% if item.userName %}{{ item.userName }}{% else %}Anonymous{% endif %}</span>
+                <p>{{ item.comment }}</p>
+              </div>
               <form method="post" action="{{ base_path }}/comments/{{ item.id }}/approve">
                 <button type="submit">Approve</button>
               </form>
