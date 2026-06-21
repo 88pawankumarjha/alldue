@@ -4,24 +4,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nikhil Funtime — Archive videos</title>
-    <link rel="stylesheet" href="/static/style.css?v=20260616-4">
-    <script src="/static/player.js?v=20260616-2" defer></script>
+    <link rel="stylesheet" href="{{ static_path }}/style.css?v=20260616-4">
+    <link rel="icon" href="{{ static_path }}/favicon.svg" type="image/svg+xml">
+    <script src="{{ static_path }}/player.js?v=20260616-2" defer></script>
   </head>
   <body class="video-page">
     <header class="video-topbar">
-      <a class="video-brand" href="/" aria-label="Nikhil Funtime home">
+      {% if request.url.path.startswith('/dev/') %}
+      <div class="dev-banner">DEV</div>
+      {% endif %}
+      <a class="video-brand" href="{{ home_path }}" aria-label="Nikhil Funtime home">
         <span class="play-mark">▶</span>
         <span>Nikhil Funtime</span>
       </a>
-      <form class="video-search" action="/" method="get">
+      <form class="video-search" action="{{ home_path }}" method="get">
         <input type="search" name="q" value="{{ query }}" placeholder="Search Archive videos" aria-label="Search Archive videos">
         <button type="submit">Search</button>
       </form>
       <nav class="top-links" aria-label="Primary">
-        <a href="/">Home</a>
+        <a href="{{ home_path }}">Home</a>
       </nav>
     </header>
 
+    {% if firestore_empty %}
+    <main class="watch-layout solo-watch">
+      <section class="watch-column">
+        <div class="video-summary">No published videos are available yet in Firestore.</div>
+      </section>
+    </main>
+    {% else %}
     <main class="watch-layout{% if not recommendations %} solo-watch{% endif %}">
       <section class="watch-column" aria-label="Selected video">
         <div class="video-frame" data-video-frame>
@@ -53,6 +64,23 @@
             <a class="archive-link" href="{{ selected.archive_url }}" target="_blank" rel="noreferrer">Open Archive</a>
           </div>
           <p class="video-summary">{{ selected.summary }}</p>
+          {% if public_actions_enabled and request.url.path.startswith('/dev/') %}
+          <div class="dev-actions" aria-label="Dev actions">
+            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/like">
+              <button type="submit">Like</button>
+            </form>
+            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/subscribe">
+              <button type="submit">Subscribe</button>
+            </form>
+            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/comments" class="dev-comment-form">
+              <input name="comment" type="text" placeholder="Add a dev comment" required>
+              <button type="submit">Post</button>
+            </form>
+            <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/publish">
+              <button type="submit">Publish to Prod</button>
+            </form>
+          </div>
+          {% endif %}
         </div>
       </section>
 
@@ -60,7 +88,7 @@
       <aside class="recommendations" aria-label="Recommended videos">
         <h2>Up next</h2>
         {% for video in recommendations %}
-        <a class="video-card" href="/?v={{ video.id }}{% if query %}&q={{ query | urlencode }}{% endif %}">
+        <a class="video-card" href="{{ home_path }}?v={{ video.id }}{% if query %}&q={{ query | urlencode }}{% endif %}">
           <span class="thumb-wrap">
             <img src="{{ video.thumb_url }}" alt="">
             <span class="duration">{{ video.duration }}</span>
@@ -83,7 +111,7 @@
       {% endif %}
       <div class="shelf-grid">
         {% for video in videos %}
-        <a class="shelf-card" href="/?v={{ video.id }}{% if query %}&q={{ query | urlencode }}{% endif %}">
+        <a class="shelf-card" href="{{ home_path }}?v={{ video.id }}{% if query %}&q={{ query | urlencode }}{% endif %}">
           <span class="thumb-wrap">
             <img src="{{ video.thumb_url }}" alt="">
             <span class="duration">{{ video.duration }}</span>
@@ -94,5 +122,6 @@
         {% endfor %}
       </div>
     </section>
+    {% endif %}
   </body>
 </html>
