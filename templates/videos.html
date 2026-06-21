@@ -165,18 +165,22 @@
             <a class="archive-link" href="{{ selected.archive_url }}" target="_blank" rel="noreferrer">Open Archive</a>
           </div>
           <p class="video-summary">{{ selected.summary }}</p>
-          {% if public_actions_enabled and current_user %}
+          {% if public_actions_enabled %}
           <div class="dev-actions" aria-label="Dev actions">
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/like">
-              <button type="submit">Like</button>
+              <button type="submit">Like <span class="action-count">{{ selected.likeCount }}</span></button>
             </form>
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/subscribe">
-              <button type="submit">Subscribe</button>
+              <button type="submit">Subscribe <span class="action-count">{{ selected.subscriberCount }}</span></button>
             </form>
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/comments" class="dev-comment-form">
               <input name="comment" type="text" placeholder="Add a dev comment" required>
               <button type="submit">Post</button>
             </form>
+            <div class="dev-actions-meta">
+              <span>Comments {{ selected.approvedCommentCount }}</span>
+              <span>Pending {{ selected.pendingCommentCount }}</span>
+            </div>
             {% if is_admin %}
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/publish">
               <button type="submit">Publish to Prod</button>

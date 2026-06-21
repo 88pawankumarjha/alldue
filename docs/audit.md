@@ -13,3 +13,4 @@
 - Moved dev/prod navigation targets to use route-specific home paths instead of shared `/` links.
 - Added anonymous fingerprint-based like dedupe and comment moderation queue.
 - Added `/dev/` comment approval actions for admin review.
+- Made Like, Subscribe, and Comment buttons visible in the `/dev/` UI with counts.
