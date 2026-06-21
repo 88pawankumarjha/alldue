@@ -282,7 +282,7 @@
         <span class="bottom-nav-icon">⌂</span>
         <span>Home</span>
       </a>
-      <button type="button" class="bottom-nav-item bottom-nav-profile" data-google-signin aria-label="Open profile or sign in">
+      <button type="button" class="bottom-nav-item bottom-nav-profile" data-google-signin aria-label="Open profile or sign in"{% if not firebase_web_config.authEnabled %} disabled{% endif %}>
         <span class="profile-avatar bottom-nav-avatar" data-profile-avatar>{% if current_user and current_user.name %}{{ current_user.name[:1] | upper }}{% endif %}</span>
         <span>Profile</span>
       </button>

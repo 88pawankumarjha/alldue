@@ -25,7 +25,7 @@ small.note { color:#666; }
   top: 0;
   z-index: 2;
   display: grid;
-  grid-template-columns: 180px minmax(180px, 1fr) auto;
+  grid-template-columns: 180px 1fr auto;
   align-items: center;
   gap: 18px;
   min-height: 56px;
@@ -212,7 +212,7 @@ small.note { color:#666; }
   right: 0;
   bottom: 0;
   z-index: 3;
-  display: none;
+  display: flex;
   justify-content: space-around;
   gap: 12px;
   padding: 10px 14px 14px;
@@ -232,6 +232,10 @@ small.note { color:#666; }
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
+}
+
+.bottom-nav-profile {
+  min-width: 72px;
 }
 
 .bottom-nav-icon,
@@ -617,10 +621,6 @@ small.note { color:#666; }
   .dev-comment-form input {
     min-width: 0;
     width: 100%;
-  }
-
-  .bottom-nav {
-    display: flex;
   }
 
   body.video-page {
