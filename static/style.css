@@ -108,12 +108,14 @@ small.note { color:#666; }
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
 }
 
 .profile-menu {
   display: flex;
   gap: 12px;
   align-items: center;
+  margin-left: auto;
 }
 
 .profile-trigger {
@@ -152,8 +154,9 @@ small.note { color:#666; }
 }
 
 .profile-avatar-empty {
-  background: #d9d9d9;
-  color: #333;
+  background: transparent;
+  border: 1px solid #d9d9d9;
+  color: transparent;
 }
 
 .profile-text {

@@ -17,9 +17,10 @@
       const auth = getAuth(app);
       const signInButton = document.querySelector("[data-google-signin]");
       const signOutButton = document.querySelector("[data-google-signout]");
-      const authLabel = document.querySelector("[data-auth-label]");
       const hiddenTokenInput = document.querySelector("[data-id-token]");
       const authForm = document.querySelector("[data-auth-form]");
+      const googleClientId = firebaseConfig.googleClientId;
+      const dismissedKey = "nf_google_one_tap_dismissed";
 
       const submitToken = async (idToken) => {
         if (!authForm || !hiddenTokenInput) return;
@@ -27,22 +28,61 @@
         authForm.submit();
       };
 
-      if (signInButton) {
-        signInButton.addEventListener("click", async () => {
-          const provider = new GoogleAuthProvider();
-          provider.setCustomParameters({ prompt: "select_account" });
-          const result = await signInWithPopup(auth, provider);
-          const idToken = await result.user.getIdToken();
-          await submitToken(idToken);
-        });
-      }
-
       if (signOutButton) {
         signOutButton.addEventListener("click", async () => {
           await signOut(auth);
           window.location.href = "/auth/logout";
         });
       }
+
+      const signInWithPopupFlow = async () => {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+        const result = await signInWithPopup(auth, provider);
+        const idToken = await result.user.getIdToken();
+        await submitToken(idToken);
+      };
+
+      if (signInButton) {
+        signInButton.addEventListener("click", async () => {
+          await signInWithPopupFlow();
+        });
+      }
+
+      const startOneTap = () => {
+        if (!googleClientId || localStorage.getItem(dismissedKey) === "1") {
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://accounts.google.com/gsi/client";
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+          if (!window.google || !window.google.accounts || !window.google.accounts.id) return;
+
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: async (response) => {
+              if (response && response.credential) {
+                await submitToken(response.credential);
+              }
+            },
+            auto_select: true
+          });
+
+          window.google.accounts.id.prompt((notification) => {
+            if (
+              notification.isNotDisplayed() ||
+              notification.isSkippedMoment() ||
+              notification.isDismissedMoment()
+            ) {
+              localStorage.setItem(dismissedKey, "1");
+            }
+          });
+        };
+        document.head.appendChild(script);
+      };
 
       onAuthStateChanged(auth, (user) => {
         const profileText = document.querySelector("[data-profile-text]");
@@ -59,6 +99,8 @@
           signInButton.setAttribute("aria-label", "Sign in with Google");
         }
       });
+
+      startOneTap();
     </script>
     {% endif %}
   </head>
@@ -76,7 +118,6 @@
         <button type="submit">Search</button>
       </form>
       <nav class="top-links" aria-label="Primary">
-        <a href="{{ home_path }}">Home</a>
         <div class="profile-menu">
           <div class="profile-status">
             <button type="button" class="profile-trigger" data-google-signin aria-label="Sign in with Google">
@@ -84,7 +125,7 @@
               <span class="profile-avatar" data-profile-avatar>{% if current_user.name %}{{ current_user.name[:1] | upper }}{% else %}U{% endif %}</span>
               <span class="profile-text" data-profile-text>{% if current_user.name %}{{ current_user.name }}{% else %}{{ current_user.email }}{% endif %}</span>
               {% else %}
-              <span class="profile-avatar profile-avatar-empty" data-profile-avatar>?</span>
+              <span class="profile-avatar profile-avatar-empty" data-profile-avatar></span>
               <span class="profile-text" data-profile-text>Sign in</span>
               {% endif %}
             </button>
