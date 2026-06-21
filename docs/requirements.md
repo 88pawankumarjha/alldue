@@ -39,3 +39,4 @@
 - Remove the visible `Open Archive` link from the watch page.
 - The fullscreen button should toggle both enter and exit fullscreen.
 - The quality selector overlay should fade out after 3 seconds and reappear on video click.
+- Prod should share the same layout shell updates as dev, minus dev-only actions/auth/admin UI.
