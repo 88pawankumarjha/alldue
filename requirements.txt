@@ -3,3 +3,4 @@ uvicorn[standard]
 Jinja2
 python-multipart
 google-cloud-firestore
+firebase-admin

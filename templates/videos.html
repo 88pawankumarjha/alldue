@@ -7,6 +7,53 @@
     <link rel="stylesheet" href="{{ static_path }}/style.css?v=20260616-4">
     <link rel="icon" href="{{ static_path }}/favicon.svg" type="image/svg+xml">
     <script src="{{ static_path }}/player.js?v=20260616-2" defer></script>
+    {% if firebase_web_config.apiKey and firebase_web_config.projectId and firebase_web_config.appId %}
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+      import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+      const firebaseConfig = {{ firebase_web_config | tojson }};
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const signInButton = document.querySelector("[data-google-signin]");
+      const signOutButton = document.querySelector("[data-google-signout]");
+      const authLabel = document.querySelector("[data-auth-label]");
+      const hiddenTokenInput = document.querySelector("[data-id-token]");
+      const authForm = document.querySelector("[data-auth-form]");
+
+      const submitToken = async (idToken) => {
+        if (!authForm || !hiddenTokenInput) return;
+        hiddenTokenInput.value = idToken;
+        authForm.submit();
+      };
+
+      if (signInButton) {
+        signInButton.addEventListener("click", async () => {
+          const provider = new GoogleAuthProvider();
+          provider.setCustomParameters({ prompt: "select_account" });
+          const result = await signInWithPopup(auth, provider);
+          const idToken = await result.user.getIdToken();
+          await submitToken(idToken);
+        });
+      }
+
+      if (signOutButton) {
+        signOutButton.addEventListener("click", async () => {
+          await signOut(auth);
+          window.location.href = "/auth/logout";
+        });
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        if (!authLabel) return;
+        if (user) {
+          authLabel.textContent = user.email || user.displayName || "Signed in";
+        } else {
+          authLabel.textContent = "Not signed in";
+        }
+      });
+    </script>
+    {% endif %}
   </head>
   <body class="video-page">
     <header class="video-topbar">
@@ -25,6 +72,27 @@
         <a href="{{ home_path }}">Home</a>
       </nav>
     </header>
+
+    <section class="auth-panel" aria-label="Account">
+      <div class="auth-status">
+        <strong data-auth-label>{% if current_user %}{{ current_user.email }}{% else %}Not signed in{% endif %}</strong>
+        {% if is_admin %}
+        <span class="admin-pill">Admin</span>
+        {% endif %}
+      </div>
+      {% if not current_user %}
+      <button type="button" class="auth-button" data-google-signin>Continue with Google</button>
+      <form method="post" action="/auth/google" data-auth-form hidden>
+        <input type="hidden" name="id_token" data-id-token>
+        <input type="hidden" name="redirect_to" value="{{ request.url.path }}{% if query %}?q={{ query | urlencode }}{% endif %}">
+      </form>
+      {% else %}
+      <form method="post" action="/auth/logout">
+        <input type="hidden" name="redirect_to" value="{{ request.url.path }}{% if query %}?q={{ query | urlencode }}{% endif %}">
+        <button type="submit" class="auth-button secondary">Sign out</button>
+      </form>
+      {% endif %}
+    </section>
 
     {% if firestore_empty %}
     <main class="watch-layout solo-watch">
@@ -64,7 +132,7 @@
             <a class="archive-link" href="{{ selected.archive_url }}" target="_blank" rel="noreferrer">Open Archive</a>
           </div>
           <p class="video-summary">{{ selected.summary }}</p>
-          {% if public_actions_enabled and request.url.path.startswith('/dev/') %}
+          {% if public_actions_enabled and request.url.path.startswith('/dev/') and current_user %}
           <div class="dev-actions" aria-label="Dev actions">
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/like">
               <button type="submit">Like</button>
@@ -76,9 +144,17 @@
               <input name="comment" type="text" placeholder="Add a dev comment" required>
               <button type="submit">Post</button>
             </form>
+            {% if is_admin %}
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/publish">
               <button type="submit">Publish to Prod</button>
             </form>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% if is_admin and request.url.path.startswith('/dev/') %}
+          <div class="admin-menu">
+            <strong>Admin menu</strong>
+            <p>Approve a dev video here, then publish it to prod.</p>
           </div>
           {% endif %}
         </div>

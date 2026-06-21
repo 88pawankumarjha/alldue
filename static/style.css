@@ -107,6 +107,45 @@ small.note { color:#666; }
   font-weight: 600;
 }
 
+.auth-panel {
+  max-width: 1320px;
+  margin: 12px auto 0;
+  padding: 0 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.auth-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.admin-pill {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #1f4fff;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.auth-button {
+  border: 1px solid #cfcfcf;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+}
+
+.auth-button.secondary {
+  background: #fff;
+  color: #111;
+}
+
 .dev-actions {
   display: flex;
   flex-wrap: wrap;
@@ -127,6 +166,14 @@ small.note { color:#666; }
 .dev-comment-form input {
   min-width: 220px;
   padding: 8px 10px;
+}
+
+.admin-menu {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #eef5ff;
+  border: 1px solid #cfe0ff;
 }
 
 .watch-layout {

@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
+import json
 import os
 from typing import Any
 
 from datetime import datetime
 
+from fastapi import Cookie, HTTPException, Response
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -16,9 +21,14 @@ BASE_DIR = os.path.dirname(__file__)
 DEFAULT_FIRESTORE_COLLECTION = "videos"
 DEFAULT_FIRESTORE_DEV_COLLECTION = "dev_videos"
 DEFAULT_FIRESTORE_DATABASE = "default"
+DEFAULT_USERS_COLLECTION = "users"
+DEFAULT_ACTIONS_COLLECTION = "video_actions"
+SESSION_COOKIE_NAME = "nf_session"
+SESSION_SIGNING_SECRET = os.environ.get("SESSION_SIGNING_SECRET", "dev-session-secret").encode("utf-8")
 BASE_PATH = os.environ.get("BASE_PATH", "").rstrip("/")
 STATIC_PATH = f"{BASE_PATH}/static" if BASE_PATH else "/static"
 HOME_PATH = f"{BASE_PATH}/" if BASE_PATH else "/"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "88pawankumarjha@gmail.com").lower()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
@@ -51,6 +61,103 @@ def _firestore_module():
     from google.cloud import firestore
 
     return firestore
+
+
+def _firebase_admin_auth():
+    import firebase_admin
+    from firebase_admin import auth, credentials
+
+    if not firebase_admin._apps:
+        credentials_path = _credentials_path()
+        if not credentials_path or not os.path.exists(credentials_path):
+            raise RuntimeError("Missing Firebase service account JSON")
+        firebase_admin.initialize_app(credentials.Certificate(credentials_path))
+    return auth
+
+
+def _encode_session_payload(payload: dict[str, Any]) -> str:
+    raw = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    body = base64.urlsafe_b64encode(raw).decode("ascii")
+    sig = hmac.new(SESSION_SIGNING_SECRET, body.encode("ascii"), hashlib.sha256).hexdigest()
+    return f"{body}.{sig}"
+
+
+def _decode_session_payload(session_value: str | None) -> dict[str, Any] | None:
+    if not session_value or "." not in session_value:
+        return None
+    body, sig = session_value.rsplit(".", 1)
+    expected = hmac.new(SESSION_SIGNING_SECRET, body.encode("ascii"), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(sig, expected):
+        return None
+    try:
+        raw = base64.urlsafe_b64decode(body.encode("ascii"))
+        return json.loads(raw.decode("utf-8"))
+    except Exception:
+        return None
+
+
+def _current_user(request: Request) -> dict[str, Any] | None:
+    return _decode_session_payload(request.cookies.get(SESSION_COOKIE_NAME))
+
+
+def _is_admin_user(user: dict[str, Any] | None) -> bool:
+    return bool(user and str(user.get("email", "")).lower() == ADMIN_EMAIL)
+
+
+def _user_doc_id(user_id: str) -> str:
+    return user_id.replace("/", "_")
+
+
+def _upsert_user_profile(user: dict[str, Any], provider: str = "google") -> None:
+    client = _load_firestore_client()
+    if client is None:
+        return
+    user_id = user.get("uid") or user.get("sub") or user.get("email")
+    if not user_id:
+        return
+    client.collection(DEFAULT_USERS_COLLECTION).document(_user_doc_id(user_id)).set(
+        {
+            "uid": user_id,
+            "email": user.get("email"),
+            "name": user.get("name") or user.get("displayName"),
+            "photoURL": user.get("picture") or user.get("photoURL"),
+            "provider": provider,
+            "isAdmin": _is_admin_user(user),
+            "lastLoginAt": datetime.utcnow().isoformat(),
+        },
+        merge=True,
+    )
+
+
+def _record_action(video_id: str, action_type: str, user: dict[str, Any] | None, comment: str | None = None) -> None:
+    client = _load_firestore_client()
+    if client is None:
+        return
+    payload = {
+        "videoId": video_id,
+        "actionType": action_type,
+        "userId": user.get("uid") if user else None,
+        "userEmail": user.get("email") if user else None,
+        "userName": user.get("name") if user else None,
+        "createdAt": datetime.utcnow().isoformat(),
+    }
+    if comment:
+        payload["comment"] = comment
+    client.collection(DEFAULT_ACTIONS_COLLECTION).document().set(payload)
+
+
+def _session_response(user: dict[str, Any], redirect_to: str) -> RedirectResponse:
+    response = RedirectResponse(url=redirect_to, status_code=303)
+    response.set_cookie(
+        SESSION_COOKIE_NAME,
+        _encode_session_payload(user),
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=60 * 60 * 24 * 30,
+        path="/",
+    )
+    return response
 
 
 def _normalize_video(document: dict[str, Any], doc_id: str) -> dict[str, Any]:
@@ -144,9 +251,21 @@ def _paths_for_request(request: Request) -> dict[str, str]:
     }
 
 
+def _firebase_web_config() -> dict[str, str]:
+    return {
+        "apiKey": os.environ.get("FIREBASE_WEB_API_KEY", ""),
+        "authDomain": os.environ.get("FIREBASE_WEB_AUTH_DOMAIN", ""),
+        "projectId": os.environ.get("FIREBASE_WEB_PROJECT_ID", ""),
+        "appId": os.environ.get("FIREBASE_WEB_APP_ID", ""),
+        "messagingSenderId": os.environ.get("FIREBASE_WEB_MESSAGING_SENDER_ID", ""),
+        "storageBucket": os.environ.get("FIREBASE_WEB_STORAGE_BUCKET", ""),
+    }
+
+
 def render_video_page(request: Request, v: str = "", q: str = ""):
     all_videos, firestore_ready = load_videos_from_firestore(request)
     path_context = _paths_for_request(request)
+    current_user = _current_user(request)
     if not all_videos:
         return templates.TemplateResponse(
             "videos.html",
@@ -160,6 +279,9 @@ def render_video_page(request: Request, v: str = "", q: str = ""):
                 "firestore_ready": firestore_ready,
                 "firestore_empty": True,
                 "public_actions_enabled": request.url.path.startswith("/dev/"),
+                "current_user": current_user,
+                "is_admin": _is_admin_user(current_user),
+                "firebase_web_config": _firebase_web_config(),
                 **path_context,
             },
         )
@@ -183,6 +305,9 @@ def render_video_page(request: Request, v: str = "", q: str = ""):
             "firestore_ready": firestore_ready,
             "firestore_empty": False,
             "public_actions_enabled": request.url.path.startswith("/dev/"),
+            "current_user": current_user,
+            "is_admin": _is_admin_user(current_user),
+            "firebase_web_config": _firebase_web_config(),
             **path_context,
         },
     )
@@ -254,9 +379,13 @@ def like_video(request: Request, video_id: str):
     if not request.url.path.startswith("/dev/"):
         return RedirectResponse(url=f"/?v={video_id}", status_code=303)
 
+    user = _current_user(request)
+    if not user:
+        return RedirectResponse(url=f"/dev/?v={video_id}", status_code=303)
     doc = _get_video_doc_for_request(request, video_id)
     if doc is not None:
         doc.update({"likeCount": _firestore_module().Increment(1), "updatedAt": datetime.utcnow().isoformat()})
+        _record_action(video_id, "like", user)
     return RedirectResponse(url=f"/?v={video_id}", status_code=303)
 
 
@@ -266,9 +395,13 @@ def subscribe_video(request: Request, video_id: str):
     if not request.url.path.startswith("/dev/"):
         return RedirectResponse(url=f"/?v={video_id}", status_code=303)
 
+    user = _current_user(request)
+    if not user:
+        return RedirectResponse(url=f"/dev/?v={video_id}", status_code=303)
     doc = _get_video_doc_for_request(request, video_id)
     if doc is not None:
         doc.update({"subscriberCount": _firestore_module().Increment(1), "updatedAt": datetime.utcnow().isoformat()})
+        _record_action(video_id, "subscribe", user)
     return RedirectResponse(url=f"/?v={video_id}", status_code=303)
 
 
@@ -278,6 +411,9 @@ def comment_video(request: Request, video_id: str, comment: str = Form(...)):
     if not request.url.path.startswith("/dev/"):
         return RedirectResponse(url=f"/?v={video_id}", status_code=303)
 
+    user = _current_user(request)
+    if not user:
+        return RedirectResponse(url=f"/dev/?v={video_id}", status_code=303)
     doc = _get_video_doc_for_request(request, video_id)
     if doc is not None and comment.strip():
         comment_doc = doc.collection("comments").document()
@@ -285,15 +421,19 @@ def comment_video(request: Request, video_id: str, comment: str = Form(...)):
             {
                 "comment": comment.strip(),
                 "createdAt": datetime.utcnow().isoformat(),
+                "userEmail": user.get("email") if user else None,
+                "userName": user.get("name") if user else None,
             }
         )
         doc.update({"commentCount": _firestore_module().Increment(1), "updatedAt": datetime.utcnow().isoformat()})
+        _record_action(video_id, "comment", user, comment.strip())
     return RedirectResponse(url=f"/?v={video_id}", status_code=303)
 
 
 @app.post("/dev/videos/{video_id}/publish")
 def publish_video(request: Request, video_id: str):
-    if not request.url.path.startswith("/dev/") or os.environ.get("APP_ENV", "dev").lower() != "dev":
+    user = _current_user(request)
+    if not request.url.path.startswith("/dev/") or os.environ.get("APP_ENV", "dev").lower() != "dev" or not _is_admin_user(user):
         return RedirectResponse(url=f"/dev/?v={video_id}", status_code=303)
 
     client = _load_firestore_client()
@@ -306,6 +446,32 @@ def publish_video(request: Request, video_id: str):
     if snapshot.exists:
         prod_doc.set(snapshot.to_dict())
     return RedirectResponse(url=f"/?v={video_id}", status_code=303)
+
+
+@app.post("/auth/google")
+def auth_google(request: Request, id_token: str = Form(...), redirect_to: str = Form("/")):
+    try:
+        auth = _firebase_admin_auth()
+        decoded = auth.verify_id_token(id_token)
+    except Exception as exc:
+        raise HTTPException(status_code=401, detail="Invalid Google sign-in") from exc
+
+    user = {
+        "uid": decoded.get("uid"),
+        "email": decoded.get("email"),
+        "name": decoded.get("name") or decoded.get("displayName"),
+        "picture": decoded.get("picture"),
+        "provider": "google",
+    }
+    _upsert_user_profile(user)
+    return _session_response(user, redirect_to or "/")
+
+
+@app.post("/auth/logout")
+def auth_logout(redirect_to: str = Form("/")):
+    response = RedirectResponse(url=redirect_to or "/", status_code=303)
+    response.delete_cookie(SESSION_COOKIE_NAME, path="/")
+    return response
 
 
 @app.get("/")
