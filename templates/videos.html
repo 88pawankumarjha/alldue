@@ -103,30 +103,6 @@
       startOneTap();
     </script>
     {% endif %}
-    {% if request.url.path.startswith('/dev/') %}
-    <script>
-      (() => {
-        const searchToggle = document.querySelector("[data-search-toggle]");
-        const searchDrawer = document.querySelector("[data-search-drawer]");
-        console.log("[dev-search] init", { hasToggle: !!searchToggle, hasDrawer: !!searchDrawer });
-        if (!searchToggle || !searchDrawer) return;
-        searchToggle.addEventListener("click", () => {
-          console.log("[dev-search] click");
-          const isHidden = searchDrawer.hasAttribute("hidden");
-          console.log("[dev-search] before", { isHidden });
-          if (isHidden) {
-            searchDrawer.removeAttribute("hidden");
-            const input = searchDrawer.querySelector('input[type="search"]');
-            if (input) input.focus();
-            console.log("[dev-search] opened");
-          } else {
-            searchDrawer.setAttribute("hidden", "");
-            console.log("[dev-search] closed");
-          }
-        });
-      })();
-    </script>
-    {% endif %}
   </head>
   <body class="video-page">
     <header class="video-topbar">
@@ -139,7 +115,12 @@
           <span>Nikhil Funtime</span>
         </a>
         <div class="header-actions">
-          <button type="button" class="icon-button" data-search-toggle aria-label="Search">
+          <button
+            type="button"
+            class="icon-button"
+            data-search-toggle
+            aria-label="Search"
+            onclick="(() => { const drawer = document.querySelector('[data-search-drawer]'); if (!drawer) return; console.log('[dev-search] click'); const hidden = drawer.hasAttribute('hidden'); console.log('[dev-search] before', { hidden }); if (hidden) { drawer.removeAttribute('hidden'); const input = drawer.querySelector('input[type=&quot;search&quot;]'); if (input) input.focus(); console.log('[dev-search] opened'); } else { drawer.setAttribute('hidden', ''); console.log('[dev-search] closed'); } })()">
             <span>⌕</span>
           </button>
         </div>
