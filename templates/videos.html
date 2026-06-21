@@ -21,6 +21,8 @@
       const authForm = document.querySelector("[data-auth-form]");
       const googleClientId = firebaseConfig.googleClientId;
       const dismissedKey = "nf_google_one_tap_dismissed";
+      const searchToggle = document.querySelector("[data-search-toggle]");
+      const searchDrawer = document.querySelector("[data-search-drawer]");
 
       const submitToken = async (idToken) => {
         if (!authForm || !hiddenTokenInput) return;
@@ -46,6 +48,19 @@
       if (signInButton) {
         signInButton.addEventListener("click", async () => {
           await signInWithPopupFlow();
+        });
+      }
+
+      if (searchToggle && searchDrawer) {
+        searchToggle.addEventListener("click", () => {
+          const isHidden = searchDrawer.hasAttribute("hidden");
+          if (isHidden) {
+            searchDrawer.removeAttribute("hidden");
+            const input = searchDrawer.querySelector('input[type="search"]');
+            if (input) input.focus();
+          } else {
+            searchDrawer.setAttribute("hidden", "");
+          }
         });
       }
 
@@ -113,10 +128,11 @@
         <span class="play-mark">▶</span>
         <span>Nikhil Funtime</span>
       </a>
-      <form class="video-search" action="{{ home_path }}" method="get">
-        <input type="search" name="q" value="{{ query }}" placeholder="Search Archive videos" aria-label="Search Archive videos">
-        <button type="submit">Search</button>
-      </form>
+      <div class="header-actions">
+        <button type="button" class="icon-button" data-search-toggle aria-label="Search">
+          <span>⌕</span>
+        </button>
+      </div>
       <nav class="top-links" aria-label="Primary">
         <div class="profile-menu">
           <div class="profile-status">
@@ -147,6 +163,13 @@
         </div>
       </nav>
     </header>
+
+    <div class="search-drawer" data-search-drawer hidden>
+      <form class="video-search drawer-search" action="{{ home_path }}" method="get">
+        <input type="search" name="q" value="{{ query }}" placeholder="Search Archive videos" aria-label="Search Archive videos">
+        <button type="submit">Search</button>
+      </form>
+    </div>
 
     {% if firestore_empty %}
     <main class="watch-layout solo-watch">
@@ -253,5 +276,16 @@
       </div>
     </section>
     {% endif %}
+
+    <footer class="bottom-nav" aria-label="Footer">
+      <a class="bottom-nav-item" href="/">
+        <span class="bottom-nav-icon">⌂</span>
+        <span>Home</span>
+      </a>
+      <button type="button" class="bottom-nav-item bottom-nav-profile" data-google-signin aria-label="Open profile or sign in">
+        <span class="profile-avatar bottom-nav-avatar" data-profile-avatar>{% if current_user and current_user.name %}{{ current_user.name[:1] | upper }}{% endif %}</span>
+        <span>Profile</span>
+      </button>
+    </footer>
   </body>
 </html>

@@ -101,6 +101,17 @@ small.note { color:#666; }
   background: #f8f8f8;
 }
 
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #d6d6d6;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+}
+
 .top-links {
   justify-self: end;
   font-size: 14px;
@@ -183,6 +194,55 @@ small.note { color:#666; }
 
 .profile-logout {
   margin: 0;
+}
+
+.search-drawer {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 12px 24px 0;
+}
+
+.drawer-search {
+  margin: 0;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: none;
+  justify-content: space-around;
+  gap: 12px;
+  padding: 10px 14px 14px;
+  background: rgba(255,255,255,0.98);
+  border-top: 1px solid #e5e5e5;
+  backdrop-filter: blur(12px);
+}
+
+.bottom-nav-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #111;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bottom-nav-icon,
+.bottom-nav-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #d6d6d6;
+  background: #fff;
 }
 
 .dev-actions {
@@ -472,6 +532,11 @@ small.note { color:#666; }
     justify-self: end;
   }
 
+  .search-drawer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   .watch-layout {
     grid-template-columns: 1fr;
     padding: 0 16px;
@@ -503,6 +568,10 @@ small.note { color:#666; }
 
   .video-brand {
     font-size: 18px;
+  }
+
+  .video-brand span:last-child {
+    display: none;
   }
 
   .profile-text {
@@ -548,6 +617,14 @@ small.note { color:#666; }
   .dev-comment-form input {
     min-width: 0;
     width: 100%;
+  }
+
+  .bottom-nav {
+    display: flex;
+  }
+
+  body.video-page {
+    padding-bottom: 78px;
   }
 
   .video-frame {
