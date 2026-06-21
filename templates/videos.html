@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ static_path }}/style.css?v=20260621-2">
     <link rel="icon" href="{{ static_path }}/favicon.svg" type="image/svg+xml">
     <script src="{{ static_path }}/player.js?v=20260616-2" defer></script>
-    {% if firebase_web_config.authEnabled and firebase_web_config.apiKey and firebase_web_config.projectId and firebase_web_config.appId and firebase_web_config.googleClientId %}
+    {% if firebase_web_config.authEnabled and firebase_web_config.apiKey and firebase_web_config.projectId and firebase_web_config.appId and firebase_web_config.authDomain %}
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
       import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -17,10 +17,9 @@
       const auth = getAuth(app);
       const signInButton = document.querySelector("[data-google-signin]");
       const signOutButton = document.querySelector("[data-google-signout]");
+      const profileButton = document.querySelector("[data-profile-button]");
       const hiddenTokenInput = document.querySelector("[data-id-token]");
       const authForm = document.querySelector("[data-auth-form]");
-      const googleClientId = firebaseConfig.googleClientId;
-      const dismissedKey = "nf_google_one_tap_dismissed";
 
       const submitToken = async (idToken) => {
         if (!authForm || !hiddenTokenInput) return;
@@ -49,40 +48,11 @@
         });
       }
 
-      const startOneTap = () => {
-        if (!googleClientId || localStorage.getItem(dismissedKey) === "1") {
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src = "https://accounts.google.com/gsi/client";
-        script.async = true;
-        script.defer = true;
-        script.onload = () => {
-          if (!window.google || !window.google.accounts || !window.google.accounts.id) return;
-
-          window.google.accounts.id.initialize({
-            client_id: googleClientId,
-            callback: async (response) => {
-              if (response && response.credential) {
-                await submitToken(response.credential);
-              }
-            },
-            auto_select: true
-          });
-
-          window.google.accounts.id.prompt((notification) => {
-            if (
-              notification.isNotDisplayed() ||
-              notification.isSkippedMoment() ||
-              notification.isDismissedMoment()
-            ) {
-              localStorage.setItem(dismissedKey, "1");
-            }
-          });
-        };
-        document.head.appendChild(script);
-      };
+      if (profileButton) {
+        profileButton.addEventListener("click", async () => {
+          await signInWithPopupFlow();
+        });
+      }
 
       onAuthStateChanged(auth, (user) => {
         const profileText = document.querySelector("[data-profile-text]");
@@ -100,7 +70,6 @@
         }
       });
 
-      startOneTap();
     </script>
     {% endif %}
   </head>
@@ -245,7 +214,7 @@
         <span class="bottom-nav-icon">⌂</span>
         <span>Home</span>
       </a>
-      <button type="button" class="bottom-nav-item bottom-nav-profile" aria-label="Profile">
+      <button type="button" class="bottom-nav-item bottom-nav-profile" aria-label="Profile"{% if request.url.path.startswith('/dev/') %} data-profile-button data-google-signin{% endif %}>
         <span class="profile-avatar bottom-nav-avatar"></span>
         <span>Profile</span>
       </button>
