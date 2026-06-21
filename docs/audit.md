@@ -10,3 +10,4 @@
 - Increased footer icon size and reduced footer label size.
 - Kept these UI changes limited to `/dev/` until explicit prod approval.
 - Wired the `/dev/` footer profile button to the Google sign-in flow.
+- Moved dev/prod navigation targets to use route-specific home paths instead of shared `/` links.

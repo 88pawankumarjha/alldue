@@ -75,11 +75,11 @@
   </head>
   <body class="video-page">
     <header class="video-topbar">
-      <div class="dev-header-row{% if request.url.path.startswith('/dev/') %} dev-mode{% endif %}">
-        {% if request.url.path.startswith('/dev/') %}
+      <div class="dev-header-row{% if is_dev %} dev-mode{% endif %}">
+        {% if show_dev_banner %}
         <div class="dev-banner">DEV</div>
         {% endif %}
-        <a class="video-brand" href="/" aria-label="Nikhil Funtime home">
+        <a class="video-brand" href="{{ home_path }}" aria-label="Nikhil Funtime home">
           <span class="play-mark">▶</span>
           <span>Nikhil Funtime</span>
         </a>
@@ -141,7 +141,7 @@
             <a class="archive-link" href="{{ selected.archive_url }}" target="_blank" rel="noreferrer">Open Archive</a>
           </div>
           <p class="video-summary">{{ selected.summary }}</p>
-          {% if public_actions_enabled and request.url.path.startswith('/dev/') and current_user %}
+          {% if public_actions_enabled and current_user %}
           <div class="dev-actions" aria-label="Dev actions">
             <form method="post" action="{{ base_path }}/videos/{{ selected.id }}/like">
               <button type="submit">Like</button>
@@ -160,7 +160,7 @@
             {% endif %}
           </div>
           {% endif %}
-          {% if is_admin and request.url.path.startswith('/dev/') %}
+          {% if show_dev_admin_menu %}
           <div class="admin-menu">
             <strong>Admin menu</strong>
             <p>Approve a dev video here, then publish it to prod.</p>
@@ -210,11 +210,11 @@
     {% endif %}
 
     <footer class="bottom-nav" aria-label="Footer">
-      <a class="bottom-nav-item" href="/">
+      <a class="bottom-nav-item" href="{{ home_path }}">
         <span class="bottom-nav-icon">⌂</span>
         <span>Home</span>
       </a>
-      <button type="button" class="bottom-nav-item bottom-nav-profile" aria-label="Profile"{% if request.url.path.startswith('/dev/') %} data-profile-button data-google-signin{% endif %}>
+      <button type="button" class="bottom-nav-item bottom-nav-profile" aria-label="Profile"{% if profile_signin_enabled %} data-profile-button data-google-signin{% endif %}>
         <span class="profile-avatar bottom-nav-avatar"></span>
         <span>Profile</span>
       </button>

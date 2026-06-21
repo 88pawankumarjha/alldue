@@ -250,6 +250,19 @@ def _paths_for_request(request: Request) -> dict[str, str]:
     }
 
 
+def _page_context_for_request(request: Request, current_user: dict[str, Any] | None) -> dict[str, Any]:
+    is_dev = request.url.path.startswith("/dev/")
+    path_context = _paths_for_request(request)
+    return {
+        **path_context,
+        "is_dev": is_dev,
+        "show_dev_banner": is_dev,
+        "public_actions_enabled": is_dev,
+        "profile_signin_enabled": is_dev,
+        "show_dev_admin_menu": is_dev and _is_admin_user(current_user),
+    }
+
+
 def _firebase_web_config() -> dict[str, str]:
     return {
         "apiKey": os.environ.get("FIREBASE_WEB_API_KEY", ""),
@@ -265,8 +278,8 @@ def _firebase_web_config() -> dict[str, str]:
 
 def render_video_page(request: Request, v: str = "", q: str = ""):
     all_videos, firestore_ready = load_videos_from_firestore(request)
-    path_context = _paths_for_request(request)
     current_user = _current_user(request)
+    page_context = _page_context_for_request(request, current_user)
     if not all_videos:
         return templates.TemplateResponse(
             "videos.html",
@@ -279,11 +292,10 @@ def render_video_page(request: Request, v: str = "", q: str = ""):
                 "has_results": False,
                 "firestore_ready": firestore_ready,
                 "firestore_empty": True,
-                "public_actions_enabled": request.url.path.startswith("/dev/"),
                 "current_user": current_user,
                 "is_admin": _is_admin_user(current_user),
                 "firebase_web_config": _firebase_web_config(),
-                **path_context,
+                **page_context,
             },
         )
 
@@ -305,11 +317,10 @@ def render_video_page(request: Request, v: str = "", q: str = ""):
             "has_results": bool(filtered_videos),
             "firestore_ready": firestore_ready,
             "firestore_empty": False,
-            "public_actions_enabled": request.url.path.startswith("/dev/"),
             "current_user": current_user,
             "is_admin": _is_admin_user(current_user),
             "firebase_web_config": _firebase_web_config(),
-            **path_context,
+            **page_context,
         },
     )
 
@@ -434,7 +445,7 @@ def comment_video(request: Request, video_id: str, comment: str = Form(...)):
 @app.post("/dev/videos/{video_id}/publish")
 def publish_video(request: Request, video_id: str):
     user = _current_user(request)
-    if not request.url.path.startswith("/dev/") or os.environ.get("APP_ENV", "dev").lower() != "dev" or not _is_admin_user(user):
+    if not request.url.path.startswith("/dev/") or not _is_admin_user(user):
         return RedirectResponse(url=f"/dev/?v={video_id}", status_code=303)
 
     client = _load_firestore_client()

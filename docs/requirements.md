@@ -13,6 +13,7 @@
 
 ## UI Rules
 - Dev shell may diverge from prod shell.
+- Dev and prod must not share UI navigation targets; logo and footer Home must stay within their own route space.
 - Footer navigation should be present.
 - Top header should be compact.
 - Search/profile controls may be inert until explicitly enabled.
