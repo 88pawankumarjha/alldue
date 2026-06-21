@@ -1,0 +1,22 @@
+# Requirements
+
+## Current Rules
+- All UI and behavior changes must be applied to `/dev/` first.
+- `/` production UI must remain unchanged until the user explicitly asks to promote a change.
+- Each new prompt that changes scope should be reflected here before promotion.
+
+## Product Goals
+- Archive.org remains the media source.
+- Firestore stores metadata only.
+- Admin approval for dev-to-prod publishing happens inside the site.
+- The site should feel mobile-first on both desktop and mobile.
+
+## UI Rules
+- Dev shell may diverge from prod shell.
+- Footer navigation should be present.
+- Top header should be compact.
+- Search/profile controls may be inert until explicitly enabled.
+
+## Tracking Rules
+- Every requested change should also be appended to `docs/audit.md`.
+- Do not promote dev changes to prod without explicit user approval.
