@@ -36,3 +36,4 @@
 - Dev and prod must use separate templates.
 - Changes to dev UI must never alter prod UI by shared template edits.
 - Page title should be `Nikhil Funtime`, with the current video name appended on a single-video view.
+- Remove the visible `Open Archive` link from the watch page.
