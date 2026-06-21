@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ static_path }}/style.css?v=20260616-4">
     <link rel="icon" href="{{ static_path }}/favicon.svg" type="image/svg+xml">
     <script src="{{ static_path }}/player.js?v=20260616-2" defer></script>
-    {% if firebase_web_config.apiKey and firebase_web_config.projectId and firebase_web_config.appId %}
+    {% if firebase_web_config.authEnabled and firebase_web_config.apiKey and firebase_web_config.projectId and firebase_web_config.appId and firebase_web_config.googleClientId %}
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
       import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -120,7 +120,7 @@
       <nav class="top-links" aria-label="Primary">
         <div class="profile-menu">
           <div class="profile-status">
-            <button type="button" class="profile-trigger" data-google-signin aria-label="Sign in with Google">
+            <button type="button" class="profile-trigger{% if not firebase_web_config.authEnabled %} disabled{% endif %}" data-google-signin aria-label="Sign in with Google"{% if not firebase_web_config.authEnabled %} disabled{% endif %}>
               {% if current_user %}
               <span class="profile-avatar" data-profile-avatar>{% if current_user.name %}{{ current_user.name[:1] | upper }}{% else %}U{% endif %}</span>
               <span class="profile-text" data-profile-text>{% if current_user.name %}{{ current_user.name }}{% else %}{{ current_user.email }}{% endif %}</span>

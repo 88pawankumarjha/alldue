@@ -256,6 +256,8 @@ def _firebase_web_config() -> dict[str, str]:
         "authDomain": os.environ.get("FIREBASE_WEB_AUTH_DOMAIN", ""),
         "projectId": os.environ.get("FIREBASE_WEB_PROJECT_ID", ""),
         "appId": os.environ.get("FIREBASE_WEB_APP_ID", ""),
+        "googleClientId": os.environ.get("FIREBASE_GOOGLE_CLIENT_ID", ""),
+        "authEnabled": os.environ.get("FIREBASE_AUTH_ENABLED", "false").lower() == "true",
         "messagingSenderId": os.environ.get("FIREBASE_WEB_MESSAGING_SENDER_ID", ""),
         "storageBucket": os.environ.get("FIREBASE_WEB_STORAGE_BUCKET", ""),
     }
