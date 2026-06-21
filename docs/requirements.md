@@ -16,6 +16,8 @@
 - Footer navigation should be present.
 - Top header should be compact.
 - Search/profile controls may be inert until explicitly enabled.
+- Dev search icon must be larger and functional.
+- Footer icons should be larger with smaller labels for a tighter mobile-style layout.
 
 ## Tracking Rules
 - Every requested change should also be appended to `docs/audit.md`.
