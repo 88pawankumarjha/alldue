@@ -27,6 +27,7 @@
 - Action and comment UI should visually resemble a compact YouTube mobile layout.
 - Like and Subscribe should update counts without a full page reload.
 - Action buttons should be flatter, tighter, and more icon-led like YouTube mobile.
+- Footer should only show Home for now; remove the profile footer control.
 
 ## Tracking Rules
 - Every requested change should also be appended to `docs/audit.md`.

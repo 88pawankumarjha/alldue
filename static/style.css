@@ -187,12 +187,7 @@ small.note { color:#666; }
   cursor: default;
 }
 
-.bottom-nav-profile {
-  min-width: 78px;
-}
-
-.bottom-nav-icon,
-.bottom-nav-avatar {
+.bottom-nav-icon {
   display: inline-grid;
   place-items: center;
   width: 36px;

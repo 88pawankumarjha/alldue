@@ -17,3 +17,4 @@
 - Hid dev action/comment blocks from prod and restyled them closer to a compact mobile video app layout.
 - Switched Like/Subscribe to AJAX so counts update in place without reloading the full page.
 - Flattened dev action buttons and tightened comment cards toward a YouTube mobile look.
+- Removed the footer profile control so only Home remains in the footer.
