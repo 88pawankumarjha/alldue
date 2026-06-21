@@ -19,3 +19,4 @@
 - Flattened dev action buttons and tightened comment cards toward a YouTube mobile look.
 - Removed the footer profile control so only Home remains in the footer.
 - Moved the search control from the header into the footer.
+- Split rendering into separate dev and prod templates.

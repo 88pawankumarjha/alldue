@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nikhil Funtime — Archive videos</title>
+    <link rel="stylesheet" href="{{ static_path }}/style.css?v=20260622-3">
+    <link rel="icon" href="{{ static_path }}/favicon.svg" type="image/svg+xml">
+    <script src="{{ static_path }}/player.js?v=20260616-2" defer></script>
+  </head>
+  <body class="video-page">
+    <header class="video-topbar">
+      <div class="dev-header-row">
+        <a class="video-brand" href="{{ home_path }}" aria-label="Nikhil Funtime home">
+          <span class="play-mark">▶</span>
+          <span>Nikhil Funtime</span>
+        </a>
+      </div>
+    </header>
+
+    {% if firestore_empty %}
+    <main class="watch-layout solo-watch">
+      <section class="watch-column">
+        <div class="video-summary">No published videos are available yet in Firestore.</div>
+      </section>
+    </main>
+    {% else %}
+    <main class="watch-layout{% if not recommendations %} solo-watch{% endif %}">
+      <section class="watch-column" aria-label="Selected video">
+        <div class="video-frame" data-video-frame>
+          <video data-watch-video controls preload="metadata" poster="{{ selected.thumb_url }}" playsinline>
+            <source src="{{ selected.video_url }}" type="video/mp4">
+            Your browser does not support the video element.
+          </video>
+          <div class="quality-control" aria-label="Video quality">
+            {% for option in selected.quality_options %}
+            <button class="quality-button{% if option.url == selected.video_url %} active{% endif %}" type="button" data-quality-url="{{ option.url }}" aria-pressed="{{ 'true' if option.url == selected.video_url else 'false' }}">{{ option.label }}</button>
+            {% endfor %}
+          </div>
+          <button class="fullscreen-button" type="button" data-fullscreen-landscape aria-label="Open fullscreen landscape" title="Open fullscreen landscape">⛶</button>
+        </div>
+        <div class="watch-meta">
+          <h1>{{ selected.title }}</h1>
+          <div class="channel-row">
+            <div class="channel-avatar">N</div>
+            <div>
+              <strong>{{ selected.creator }}</strong>
+              <p>{{ selected.views }} · {{ selected.duration }} · streamed from Archive.org</p>
+            </div>
+            <a class="archive-link" href="{{ selected.archive_url }}" target="_blank" rel="noreferrer">Open Archive</a>
+          </div>
+          <p class="video-summary">{{ selected.summary }}</p>
+        </div>
+      </section>
+      {% if recommendations %}
+      <aside class="recommendations" aria-label="Recommended videos">
+        <h2>Up next</h2>
+        {% for video in recommendations %}
+        <a class="video-card" href="{{ home_path }}?v={{ video.id }}{% if query %}&q={{ query | urlencode }}{% endif %}">
+          <span class="thumb-wrap">
+            <img src="{{ video.thumb_url }}" alt="">
+            <span class="duration">{{ video.duration }}</span>
+          </span>
+          <span class="card-copy">
+            <strong>{{ video.title }}</strong>
+            <span>{{ video.creator }}</span>
+            <span>{{ video.views }}</span>
+          </span>
+        </a>
+        {% endfor %}
+      </aside>
+      {% endif %}
+    </main>
+    {% endif %}
+
+    <footer class="bottom-nav" aria-label="Footer">
+      <a class="bottom-nav-item" href="{{ home_path }}">
+        <span class="bottom-nav-icon">⌂</span>
+        <span>Home</span>
+      </a>
+    </footer>
+  </body>
+</html>

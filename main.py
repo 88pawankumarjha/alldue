@@ -375,7 +375,7 @@ def render_video_page(request: Request, v: str = "", q: str = ""):
     page_context = _page_context_for_request(request, current_user)
     if not all_videos:
         return templates.TemplateResponse(
-            "videos.html",
+            "videos_dev.html" if request.url.path.startswith("/dev/") else "videos_prod.html",
             {
                 "request": request,
                 "selected": None,
@@ -403,7 +403,7 @@ def render_video_page(request: Request, v: str = "", q: str = ""):
     source = "firestore" if firestore_ready else "fallback"
     print(f"render_video_page source={source} selected={selected['id']} query={query or '-'}")
     return templates.TemplateResponse(
-        "videos.html",
+        "videos_dev.html" if request.url.path.startswith("/dev/") else "videos_prod.html",
         {
             "request": request,
             "selected": selected,

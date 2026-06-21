@@ -33,3 +33,5 @@
 ## Tracking Rules
 - Every requested change should also be appended to `docs/audit.md`.
 - Do not promote dev changes to prod without explicit user approval.
+- Dev and prod must use separate templates.
+- Changes to dev UI must never alter prod UI by shared template edits.
