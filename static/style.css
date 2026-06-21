@@ -207,11 +207,9 @@ small.note { color:#666; }
 }
 
 .dev-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 10px;
   margin-top: 14px;
-  align-items: center;
 }
 
 .dev-actions form {
@@ -220,26 +218,29 @@ small.note { color:#666; }
 
 .dev-actions button,
 .dev-comment-form input {
-  min-height: 40px;
-  border-radius: 999px;
+  min-height: 44px;
+  border-radius: 12px;
 }
 
 .dev-actions button {
-  display: inline-flex;
+  display: inline-grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  width: 100%;
   padding: 0 14px;
-  border: 1px solid #2a3140;
-  background: #151a23;
+  border: 1px solid #243042;
+  background: #121820;
   color: #f3f4f6;
   font-weight: 700;
+  text-align: left;
 }
 
 .action-icon {
   display: inline-grid;
   place-items: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   color: #f3f4f6;
   background: rgba(255,255,255,0.08);
@@ -248,10 +249,10 @@ small.note { color:#666; }
 }
 
 .action-count {
-  margin-left: 6px;
   color: #9aa4b5;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
+  justify-self: end;
 }
 
 .dev-actions-meta {
@@ -264,23 +265,23 @@ small.note { color:#666; }
 }
 
 .dev-comment-form {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
   width: 100%;
 }
 
 .dev-comment-form input {
-  flex: 1 1 220px;
-  min-width: 0;
-  padding: 8px 10px;
-  border: 1px solid #2a3140;
-  background: #10131a;
+  width: 100%;
+  padding: 0 14px;
+  border: 1px solid #243042;
+  background: #121820;
   color: #f3f4f6;
 }
 
 .comment-list {
   margin-top: 14px;
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 16px;
   background: #131821;
   border: 1px solid #263041;
@@ -288,7 +289,7 @@ small.note { color:#666; }
 
 .comment-item {
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) auto;
+  grid-template-columns: 32px minmax(0, 1fr);
   gap: 10px;
   align-items: start;
   margin-top: 10px;
@@ -321,7 +322,7 @@ small.note { color:#666; }
 
 .comment-author {
   color: #f3f4f6;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -329,19 +330,19 @@ small.note { color:#666; }
 .comment-item p {
   margin: 0;
   color: #d6dbe5;
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 .comment-item form {
-  margin: 0;
+  margin: 0 0 0 42px;
 }
 
 .comment-item button {
   min-height: 32px;
   padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid #2a3140;
-  background: #151a23;
+  border-radius: 12px;
+  border: 1px solid #243042;
+  background: #121820;
   color: #f3f4f6;
   font-size: 12px;
   font-weight: 700;
