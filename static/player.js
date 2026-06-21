@@ -33,6 +33,15 @@
   };
 
   const enterFullscreen = async () => {
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+      } catch (_error) {
+        // Ignore browsers that disallow programmatic exit.
+      }
+      return;
+    }
+
     try {
       if (frame.requestFullscreen) {
         await frame.requestFullscreen();
