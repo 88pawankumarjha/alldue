@@ -184,11 +184,35 @@
             {% endif %}
           </div>
           {% endif %}
+          {% if comments %}
+          <div class="comment-list" aria-label="Approved comments">
+            <strong>Comments</strong>
+            {% for item in comments %}
+            <div class="comment-item">
+              <p>{{ item.comment }}</p>
+              <span>{% if item.userName %}{{ item.userName }}{% else %}Anonymous{% endif %}</span>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
           {% if show_dev_admin_menu %}
           <div class="admin-menu">
             <strong>Admin menu</strong>
             <p>Approve a dev video here, then publish it to prod.</p>
           </div>
+          {% if pending_comments %}
+          <div class="admin-menu">
+            <strong>Pending comments</strong>
+            {% for item in pending_comments %}
+            <div class="comment-item">
+              <p>{{ item.comment }}</p>
+              <form method="post" action="{{ base_path }}/comments/{{ item.id }}/approve">
+                <button type="submit">Approve</button>
+              </form>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
           {% endif %}
         </div>
       </section>

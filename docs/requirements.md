@@ -20,6 +20,8 @@
 - Dev search icon must be larger and functional.
 - Footer icons should be larger with smaller labels for a tighter mobile-style layout.
 - On `/dev/`, the footer profile button should open Google sign-in when auth is enabled.
+- Anonymous likes should be one-per-browser/IP fingerprint.
+- Comments should land in a pending queue and only be visible after admin approval on `/dev/`.
 
 ## Tracking Rules
 - Every requested change should also be appended to `docs/audit.md`.
