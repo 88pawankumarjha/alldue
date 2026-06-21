@@ -2,6 +2,7 @@
   const frame = document.querySelector("[data-video-frame]");
   const video = document.querySelector("[data-watch-video]");
   const fullscreenButton = document.querySelector("[data-fullscreen-landscape]");
+  const qualityControl = document.querySelector(".quality-control");
   const qualityButtons = [...document.querySelectorAll("[data-quality-url]")];
 
   if (!frame || !video || !fullscreenButton) {
@@ -66,6 +67,25 @@
       }
     }
   };
+
+  let qualityHideTimer = null;
+  const showQualityControl = () => {
+    if (!qualityControl) return;
+    qualityControl.classList.remove("quality-control-hidden");
+    if (qualityHideTimer) {
+      window.clearTimeout(qualityHideTimer);
+    }
+    qualityHideTimer = window.setTimeout(() => {
+      qualityControl.classList.add("quality-control-hidden");
+    }, 3000);
+  };
+
+  if (qualityControl) {
+    showQualityControl();
+    video.addEventListener("click", showQualityControl);
+    video.addEventListener("play", showQualityControl);
+    video.addEventListener("loadeddata", showQualityControl);
+  }
 
   fullscreenButton.addEventListener("click", enterFullscreen);
 

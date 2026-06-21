@@ -23,3 +23,4 @@
 - Updated page titles to use `Nikhil Funtime` with the current video name appended on single-video views.
 - Removed the visible `Open Archive` link from the watch page.
 - Fixed the fullscreen button so it exits fullscreen when already active.
+- Added auto-fade behavior for the quality selector overlay with click-to-show interaction.

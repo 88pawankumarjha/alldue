@@ -405,6 +405,13 @@ small.note { color:#666; }
   overflow: hidden;
   border-radius: 18px;
   background: rgba(0,0,0,0.62);
+  opacity: 1;
+  transition: opacity 180ms ease;
+}
+
+.quality-control-hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .quality-button {
