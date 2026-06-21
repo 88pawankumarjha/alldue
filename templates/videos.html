@@ -45,11 +45,18 @@
       }
 
       onAuthStateChanged(auth, (user) => {
-        if (!authLabel) return;
+        const profileText = document.querySelector("[data-profile-text]");
+        const profileAvatar = document.querySelector("[data-profile-avatar]");
+        const signInButton = document.querySelector("[data-google-signin]");
+        if (!profileText || !profileAvatar || !signInButton) return;
         if (user) {
-          authLabel.textContent = user.email || user.displayName || "Signed in";
+          profileText.textContent = user.displayName || user.email || "Signed in";
+          profileAvatar.textContent = (user.displayName || user.email || "U").slice(0, 1).toUpperCase();
+          signInButton.setAttribute("aria-label", "Signed in as " + (user.email || user.displayName || "user"));
         } else {
-          authLabel.textContent = "Not signed in";
+          profileText.textContent = "Sign in";
+          profileAvatar.textContent = "?";
+          signInButton.setAttribute("aria-label", "Sign in with Google");
         }
       });
     </script>
@@ -70,29 +77,35 @@
       </form>
       <nav class="top-links" aria-label="Primary">
         <a href="{{ home_path }}">Home</a>
+        <div class="profile-menu">
+          <div class="profile-status">
+            <button type="button" class="profile-trigger" data-google-signin aria-label="Sign in with Google">
+              {% if current_user %}
+              <span class="profile-avatar" data-profile-avatar>{% if current_user.name %}{{ current_user.name[:1] | upper }}{% else %}U{% endif %}</span>
+              <span class="profile-text" data-profile-text>{% if current_user.name %}{{ current_user.name }}{% else %}{{ current_user.email }}{% endif %}</span>
+              {% else %}
+              <span class="profile-avatar profile-avatar-empty" data-profile-avatar>?</span>
+              <span class="profile-text" data-profile-text>Sign in</span>
+              {% endif %}
+            </button>
+            {% if is_admin %}
+            <span class="admin-pill">Admin</span>
+            {% endif %}
+          </div>
+          {% if not current_user %}
+          <form method="post" action="/auth/google" data-auth-form hidden>
+            <input type="hidden" name="id_token" data-id-token>
+            <input type="hidden" name="redirect_to" value="{{ request.url.path }}{% if query %}?q={{ query | urlencode }}{% endif %}">
+          </form>
+          {% else %}
+          <form method="post" action="/auth/logout" class="profile-logout">
+            <input type="hidden" name="redirect_to" value="{{ request.url.path }}{% if query %}?q={{ query | urlencode }}{% endif %}">
+            <button type="submit" class="profile-signout">Sign out</button>
+          </form>
+          {% endif %}
+        </div>
       </nav>
     </header>
-
-    <section class="auth-panel" aria-label="Account">
-      <div class="auth-status">
-        <strong data-auth-label>{% if current_user %}{{ current_user.email }}{% else %}Not signed in{% endif %}</strong>
-        {% if is_admin %}
-        <span class="admin-pill">Admin</span>
-        {% endif %}
-      </div>
-      {% if not current_user %}
-      <button type="button" class="auth-button" data-google-signin>Continue with Google</button>
-      <form method="post" action="/auth/google" data-auth-form hidden>
-        <input type="hidden" name="id_token" data-id-token>
-        <input type="hidden" name="redirect_to" value="{{ request.url.path }}{% if query %}?q={{ query | urlencode }}{% endif %}">
-      </form>
-      {% else %}
-      <form method="post" action="/auth/logout">
-        <input type="hidden" name="redirect_to" value="{{ request.url.path }}{% if query %}?q={{ query | urlencode }}{% endif %}">
-        <button type="submit" class="auth-button secondary">Sign out</button>
-      </form>
-      {% endif %}
-    </section>
 
     {% if firestore_empty %}
     <main class="watch-layout solo-watch">

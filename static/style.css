@@ -25,7 +25,7 @@ small.note { color:#666; }
   top: 0;
   z-index: 2;
   display: grid;
-  grid-template-columns: 180px minmax(180px, 620px) auto;
+  grid-template-columns: 180px minmax(180px, 1fr) auto;
   align-items: center;
   gap: 18px;
   min-height: 56px;
@@ -105,24 +105,29 @@ small.note { color:#666; }
   justify-self: end;
   font-size: 14px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.auth-panel {
-  max-width: 1320px;
-  margin: 12px auto 0;
-  padding: 0 24px;
+.profile-menu {
   display: flex;
   gap: 12px;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
 }
 
-.auth-status {
+.profile-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-size: 14px;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid #d6d6d6;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
 }
 
 .admin-pill {
@@ -134,16 +139,42 @@ small.note { color:#666; }
   font-weight: 700;
 }
 
-.auth-button {
-  border: 1px solid #cfcfcf;
-  border-radius: 999px;
+.profile-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   background: #111;
   color: #fff;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.auth-button.secondary {
-  background: #fff;
-  color: #111;
+.profile-avatar-empty {
+  background: #d9d9d9;
+  color: #333;
+}
+
+.profile-text {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.profile-signout {
+  border: 0;
+  background: transparent;
+  color: #666;
+  font-size: 12px;
+  padding: 0;
+}
+
+.profile-logout {
+  margin: 0;
 }
 
 .dev-actions {
