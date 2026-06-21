@@ -21,8 +21,6 @@
       const authForm = document.querySelector("[data-auth-form]");
       const googleClientId = firebaseConfig.googleClientId;
       const dismissedKey = "nf_google_one_tap_dismissed";
-      const searchToggle = document.querySelector("[data-search-toggle]");
-      const searchDrawer = document.querySelector("[data-search-drawer]");
 
       const submitToken = async (idToken) => {
         if (!authForm || !hiddenTokenInput) return;
@@ -48,19 +46,6 @@
       if (signInButton) {
         signInButton.addEventListener("click", async () => {
           await signInWithPopupFlow();
-        });
-      }
-
-      if (searchToggle && searchDrawer) {
-        searchToggle.addEventListener("click", () => {
-          const isHidden = searchDrawer.hasAttribute("hidden");
-          if (isHidden) {
-            searchDrawer.removeAttribute("hidden");
-            const input = searchDrawer.querySelector('input[type="search"]');
-            if (input) input.focus();
-          } else {
-            searchDrawer.setAttribute("hidden", "");
-          }
         });
       }
 
@@ -116,6 +101,25 @@
       });
 
       startOneTap();
+    </script>
+    {% endif %}
+    {% if request.url.path.startswith('/dev/') %}
+    <script>
+      (() => {
+        const searchToggle = document.querySelector("[data-search-toggle]");
+        const searchDrawer = document.querySelector("[data-search-drawer]");
+        if (!searchToggle || !searchDrawer) return;
+        searchToggle.addEventListener("click", () => {
+          const isHidden = searchDrawer.hasAttribute("hidden");
+          if (isHidden) {
+            searchDrawer.removeAttribute("hidden");
+            const input = searchDrawer.querySelector('input[type="search"]');
+            if (input) input.focus();
+          } else {
+            searchDrawer.setAttribute("hidden", "");
+          }
+        });
+      })();
     </script>
     {% endif %}
   </head>
