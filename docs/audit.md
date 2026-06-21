@@ -20,3 +20,4 @@
 - Removed the footer profile control so only Home remains in the footer.
 - Moved the search control from the header into the footer.
 - Split rendering into separate dev and prod templates.
+- Updated page titles to use `Nikhil Funtime` with the current video name appended on single-video views.
