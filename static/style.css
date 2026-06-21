@@ -24,14 +24,24 @@ small.note { color:#666; }
   position: sticky;
   top: 0;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 180px 1fr auto;
+  display: block;
   align-items: center;
-  gap: 18px;
   min-height: 56px;
   padding: 0 24px;
   border-bottom: 1px solid #e5e5e5;
   background: rgba(255,255,255,0.97);
+}
+
+.dev-header-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.dev-header-row.dev-mode {
+  grid-template-columns: auto auto 1fr auto;
 }
 
 .dev-banner {
@@ -60,6 +70,7 @@ small.note { color:#666; }
   gap: 8px;
   font-size: 20px;
   font-weight: 700;
+  justify-self: start;
 }
 
 .play-mark {
@@ -127,6 +138,10 @@ small.note { color:#666; }
   gap: 12px;
   align-items: center;
   margin-left: auto;
+}
+
+.profile-trigger {
+  justify-self: end;
 }
 
 .profile-trigger {
