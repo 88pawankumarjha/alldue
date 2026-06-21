@@ -37,9 +37,18 @@
       const signInWithPopupFlow = async () => {
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
-        const result = await signInWithPopup(auth, provider);
-        const idToken = await result.user.getIdToken();
-        await submitToken(idToken);
+        try {
+          const result = await signInWithPopup(auth, provider);
+          const idToken = await result.user.getIdToken();
+          await submitToken(idToken);
+        } catch (error) {
+          console.error("[auth] google sign-in failed", {
+            code: error && error.code,
+            message: error && error.message,
+            email: error && error.email
+          });
+          throw error;
+        }
       };
 
       if (signInButton) {
