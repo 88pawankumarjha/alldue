@@ -107,7 +107,18 @@
     <script>
       (() => {
         const searchToggle = document.querySelector("[data-search-toggle]");
-        if (searchToggle) searchToggle.setAttribute("aria-disabled", "true");
+        const searchDrawer = document.querySelector("[data-search-drawer]");
+        if (!searchToggle || !searchDrawer) return;
+        searchToggle.addEventListener("click", () => {
+          const isHidden = searchDrawer.hasAttribute("hidden");
+          if (isHidden) {
+            searchDrawer.removeAttribute("hidden");
+            const input = searchDrawer.querySelector('input[type="search"]');
+            if (input) input.focus();
+          } else {
+            searchDrawer.setAttribute("hidden", "");
+          }
+        });
       })();
     </script>
     {% endif %}
