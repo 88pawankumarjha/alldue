@@ -32,9 +32,8 @@ ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "88pawankumarjha@gmail.com").lower()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+app.mount("/dev/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static-dev")
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
-if BASE_PATH:
-    app.mount(f"{BASE_PATH}/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static-dev")
 
 
 def _credentials_path() -> str | None:
