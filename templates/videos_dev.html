@@ -131,7 +131,10 @@
         const footer = document.querySelector('.bottom-nav');
         const badge = document.querySelector('[data-scroll-debug-badge]');
         if (!topbar || !footer) return;
-        const getScrollY = () => window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const getScrollY = () => {
+          const scroller = document.scrollingElement || document.documentElement || document.body;
+          return scroller ? (scroller.scrollTop || 0) : 0;
+        };
         let lastScrollY = getScrollY();
         let hidden = false;
         let ticking = false;
@@ -140,18 +143,19 @@
           const delta = currentY - lastScrollY;
           const scrollingDown = delta > 6 && currentY > 24;
           const scrollingUp = delta < -6 || currentY < 20;
+          if (badge) badge.textContent = `y=${currentY} d=${delta}`;
           if (scrollingDown && !hidden) {
             hidden = true;
             topbar.classList.add('is-hidden');
             footer.classList.add('is-hidden');
-            if (badge) badge.textContent = 'Scroll down';
+            if (badge) badge.textContent = `down y=${currentY}`;
           } else if (scrollingUp && hidden) {
             hidden = false;
             topbar.classList.remove('is-hidden');
             footer.classList.remove('is-hidden');
-            if (badge) badge.textContent = 'Scroll up';
+            if (badge) badge.textContent = `up y=${currentY}`;
           } else if (badge) {
-            badge.textContent = hidden ? 'Hidden' : 'Scroll idle';
+            badge.textContent = hidden ? `hidden y=${currentY}` : `idle y=${currentY}`;
           }
           lastScrollY = currentY;
           ticking = false;
@@ -159,11 +163,13 @@
         const onScroll = () => {
           if (ticking) return;
           ticking = true;
+          if (badge) badge.textContent = 'event...';
           window.requestAnimationFrame(toggleChrome);
         };
         window.addEventListener('scroll', onScroll, { passive: true });
         window.addEventListener('touchmove', onScroll, { passive: true });
         window.addEventListener('resize', onScroll, { passive: true });
+        if (badge) badge.textContent = `init y=${lastScrollY}`;
       })();
     </script>
   </head>
