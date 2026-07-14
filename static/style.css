@@ -88,6 +88,18 @@ small.note { color:#666; }
   justify-self: start;
 }
 
+.scroll-debug-badge {
+  justify-self: end;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(31, 39, 52, 0.96);
+  border: 1px solid #334155;
+  color: #dbe4f0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .play-mark {
   display: inline-grid;
   place-items: center;
@@ -187,6 +199,10 @@ small.note { color:#666; }
   transform: translateY(110%);
   opacity: 0;
   pointer-events: none;
+}
+
+.video-topbar.is-hidden .scroll-debug-badge {
+  opacity: 0.75;
 }
 
 .bottom-nav-item {

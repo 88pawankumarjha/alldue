@@ -129,6 +129,7 @@
       (() => {
         const topbar = document.querySelector('.video-topbar');
         const footer = document.querySelector('.bottom-nav');
+        const badge = document.querySelector('[data-scroll-debug-badge]');
         if (!topbar || !footer) return;
         const getScrollY = () => window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
         let lastScrollY = getScrollY();
@@ -143,10 +144,14 @@
             hidden = true;
             topbar.classList.add('is-hidden');
             footer.classList.add('is-hidden');
+            if (badge) badge.textContent = 'Scroll down';
           } else if (scrollingUp && hidden) {
             hidden = false;
             topbar.classList.remove('is-hidden');
             footer.classList.remove('is-hidden');
+            if (badge) badge.textContent = 'Scroll up';
+          } else if (badge) {
+            badge.textContent = hidden ? 'Hidden' : 'Scroll idle';
           }
           lastScrollY = currentY;
           ticking = false;
@@ -172,6 +177,7 @@
           <span class="play-mark">▶</span>
           <span>Nikhil Funtime</span>
         </a>
+        <span class="scroll-debug-badge" data-scroll-debug-badge>Scroll idle</span>
       </div>
     </header>
 
