@@ -31,6 +31,14 @@ small.note { color:#666; }
   padding: 0 24px;
   border-bottom: 1px solid #232833;
   background: rgba(12,14,18,0.96);
+  transition: transform 180ms ease, opacity 180ms ease;
+  will-change: transform, opacity;
+}
+
+.video-topbar.is-hidden {
+  transform: translateY(-110%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .dev-header-row {
@@ -171,6 +179,14 @@ small.note { color:#666; }
   background: rgba(12,14,18,0.96);
   border-top: 1px solid #232833;
   backdrop-filter: blur(12px);
+  transition: transform 180ms ease, opacity 180ms ease;
+  will-change: transform, opacity;
+}
+
+.bottom-nav.is-hidden {
+  transform: translateY(110%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .bottom-nav-item {

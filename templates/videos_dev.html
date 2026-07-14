@@ -125,6 +125,33 @@
       startOneTap();
     </script>
     {% endif %}
+    <script>
+      (() => {
+        const topbar = document.querySelector('.video-topbar');
+        const footer = document.querySelector('.bottom-nav');
+        if (!topbar || !footer) return;
+        let lastScrollY = window.scrollY || 0;
+        let ticking = false;
+        const toggleChrome = () => {
+          const currentY = window.scrollY || 0;
+          const scrollingDown = currentY > lastScrollY && currentY > 12;
+          const scrollingUp = currentY < lastScrollY || currentY < 12;
+          topbar.classList.toggle('is-hidden', scrollingDown);
+          footer.classList.toggle('is-hidden', scrollingDown);
+          if (scrollingUp) {
+            topbar.classList.remove('is-hidden');
+            footer.classList.remove('is-hidden');
+          }
+          lastScrollY = currentY;
+          ticking = false;
+        };
+        window.addEventListener('scroll', () => {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(toggleChrome);
+        }, { passive: true });
+      })();
+    </script>
   </head>
   <body class="video-page">
     <header class="video-topbar">
