@@ -130,26 +130,35 @@
         const topbar = document.querySelector('.video-topbar');
         const footer = document.querySelector('.bottom-nav');
         if (!topbar || !footer) return;
-        let lastScrollY = window.scrollY || 0;
+        const getScrollY = () => window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        let lastScrollY = getScrollY();
+        let hidden = false;
         let ticking = false;
         const toggleChrome = () => {
-          const currentY = window.scrollY || 0;
-          const scrollingDown = currentY > lastScrollY && currentY > 12;
-          const scrollingUp = currentY < lastScrollY || currentY < 12;
-          topbar.classList.toggle('is-hidden', scrollingDown);
-          footer.classList.toggle('is-hidden', scrollingDown);
-          if (scrollingUp) {
+          const currentY = getScrollY();
+          const delta = currentY - lastScrollY;
+          const scrollingDown = delta > 6 && currentY > 24;
+          const scrollingUp = delta < -6 || currentY < 20;
+          if (scrollingDown && !hidden) {
+            hidden = true;
+            topbar.classList.add('is-hidden');
+            footer.classList.add('is-hidden');
+          } else if (scrollingUp && hidden) {
+            hidden = false;
             topbar.classList.remove('is-hidden');
             footer.classList.remove('is-hidden');
           }
           lastScrollY = currentY;
           ticking = false;
         };
-        window.addEventListener('scroll', () => {
+        const onScroll = () => {
           if (ticking) return;
           ticking = true;
           window.requestAnimationFrame(toggleChrome);
-        }, { passive: true });
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('touchmove', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll, { passive: true });
       })();
     </script>
   </head>
